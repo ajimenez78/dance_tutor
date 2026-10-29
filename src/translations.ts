@@ -1,0 +1,215 @@
+// English messages are the keys; Spanish is the default interface language.
+export const spanish: Record<string, string> = {
+  Language: "Idioma",
+  Today: "Hoy",
+  "Learning path": "Mi recorrido",
+  "My library": "Mi biblioteca",
+  "A little practice. A little more you.":
+    "Un poco de práctica. Un poco más de ti.",
+  "YOUR DAILY DANCE PRACTICE": "TU PRÁCTICA DIARIA DE BAILE",
+  "Find your rhythm.": "Encuentra tu ritmo.",
+  "One step at a time.": "Un paso cada día.",
+  "You don’t need a partner or a perfect sense of rhythm.":
+    "No necesitas pareja ni un sentido del ritmo perfecto.",
+  "Just a few minutes, a little curiosity, and a place to start.":
+    "Solo unos minutos, un poco de curiosidad y un punto de partida.",
+  "What moves you?": "¿Qué te mueve?",
+  "Choose your first style": "Elige tu primer estilo",
+  "Start with {style}": "Empezar con {style}",
+  "BEGINNER FRIENDLY": "A TU PROPIO RITMO",
+  "A few minutes a day": "Unos minutos al día",
+  "Small, guided steps": "Pequeños pasos guiados",
+  "Your pace, always": "Siempre a tu ritmo",
+  "A little less scrolling. A little more dancing.":
+    "Un poco menos de pantalla. Un poco más de baile.",
+  "No account needed. Your progress stays in this browser.":
+    "Sin cuenta. Tu progreso se guarda en este navegador.",
+  "A LITTLE SPARK IN EVERY STEP": "UNA CHISPA EN CADA PASO",
+  "MAKE ROOM FOR A LITTLE FLOW": "DÉJATE LLEVAR POR EL RITMO",
+  step: "paso",
+  tap: "toque",
+  hold: "pausa",
+  practiced: "practicado",
+  "not practiced": "sin practicar",
+  today: "hoy",
+  Completed: "Completada",
+  "Optional review": "Repaso opcional",
+  "YOUR DAILY DOSE OF DANCE": "TU MOMENTO DIARIO DE BAILE",
+  "A little practice.": "Un poco de práctica.",
+  "A lot of possibility.": "Muchas posibilidades.",
+  "Come as you are. Leave one step further.":
+    "Ven tal como eres. Avanza un paso más.",
+  "KEEP THE RHYTHM GOING": "QUE NO PARE EL RITMO",
+  "TODAY’S LITTLE STEP": "EL PEQUEÑO PASO DE HOY",
+  "{style} foundations": "Fundamentos de {style}",
+  "Lesson {number}": "Lección {number}",
+  "Back to the basics.": "Vuelve a lo esencial.",
+  "Your foundations are complete. Keep them feeling natural with a little daily practice.":
+    "Has completado los fundamentos. Sigue practicando un poco cada día para afianzarlos.",
+  "Your selected stage is complete. Repeat it or revisit earlier lessons in your path.":
+    "Has completado tu etapa. Repítela o repasa las lecciones anteriores en tu recorrido.",
+  "A few minutes now can change the way you move.":
+    "Unos minutos pueden cambiar tu forma de moverte.",
+  "Practice again": "Volver a practicar",
+  "Let’s practice": "Vamos a practicar",
+  "About 5 minutes": "Unos 5 minutos",
+  "No partner needed": "Sin pareja",
+  "SHOWING UP COUNTS": "LA CONSTANCIA CUENTA",
+  "day in a row": "día seguido",
+  "days in a row": "días seguidos",
+  "You made time for yourself today. That’s a step worth celebrating.":
+    "Hoy te has dedicado un rato. Es un paso que merece celebrarse.",
+  "Big things start with a small daily habit. Let’s make today day {day}.":
+    "Todo empieza con un pequeño hábito. Hagamos que hoy sea el día {day}.",
+  "Today’s practice, done.": "La práctica de hoy, hecha.",
+  "A fresh chance to find your rhythm.":
+    "Una nueva ocasión para encontrar tu ritmo.",
+  "BUILD YOUR FOUNDATION": "CONSTRUYE TU BASE",
+  "Your {style} journey": "Tu recorrido de {style}",
+  "View path": "Ver recorrido",
+  "Little steps, real progress": "Pequeños pasos, progreso real",
+  "{count} / 4 lessons": "{count} / 4 lecciones",
+  "A GENTLE REMINDER": "UN PEQUEÑO RECORDATORIO",
+  "You don’t have to be good to begin. You just have to begin.":
+    "No tienes que hacerlo bien para empezar. Solo tienes que empezar.",
+  "Some days, one song is enough.": "Algunos días, una canción es suficiente.",
+  "Make a little room for yourself.": "Dedícate un pequeño espacio.",
+  "Collect a little inspiration": "Guarda un poco de inspiración",
+  "SMALL STEPS. SOLID FOUNDATIONS.": "PEQUEÑOS PASOS. UNA BASE FIRME.",
+  "One idea at a time. Revisit any lesson whenever you like.":
+    "Una idea cada vez. Vuelve a cualquier lección cuando quieras.",
+  "CHAPTER 01": "CAPÍTULO 01",
+  "The foundations": "Los fundamentos",
+  "Four little lessons to get you moving.":
+    "Cuatro pequeñas lecciones para empezar a moverte.",
+  "Foundations complete. Keep practicing to make them yours.":
+    "Fundamentos completados. Sigue practicando para hacerlos tuyos.",
+  "THE FEEL OF {style}": "EL RITMO DE {style}",
+  "Explore with Dance Dojo": "Descubre más con Dance Dojo",
+  " (opens in a new tab)": " (se abre en otra pestaña)",
+  "Starting point": "Punto de partida",
+  "Choose where to begin": "Elige por dónde empezar",
+  "Start with rhythm": "Empiezo desde cero",
+  "I know the rhythm": "Ya conozco el ritmo",
+  "I know the basic steps": "Ya conozco los pasos básicos",
+  Rhythm: "Ritmo",
+  "Basic steps": "Pasos básicos",
+  Combinations: "Combinaciones",
+  "Earlier lessons stay available for review. Only finished lessons count as completed.":
+    "Las lecciones anteriores siguen disponibles para repasar. Solo se completan las que termines.",
+  "YOUR OWN CORNER OF INSPIRATION": "TU RINCÓN DE INSPIRACIÓN",
+  "Good things.": "Buenas ideas.",
+  "Saved for later.": "Para otro momento.",
+  "Bring your favorite {style} lessons, videos and creators together.":
+    "Reúne tus lecciones, vídeos y creadores favoritos de {style}.",
+  "Add source": "Añadir recurso",
+  "Source saved.": "Recurso guardado.",
+  "A LITTLE INSPIRATION GOES A LONG WAY": "UN POCO DE INSPIRACIÓN LLEVA LEJOS",
+  "Your library starts with a spark.": "Tu biblioteca empieza con una chispa.",
+  "Found a video that made a step click?":
+    "¿Un vídeo te ha ayudado a entender un paso?",
+  "Save it here and come back whenever you need it.":
+    "Guárdalo aquí y vuelve cuando lo necesites.",
+  "Save your first source": "Guarda tu primer recurso",
+  "Remove {title}": "Eliminar {title}",
+  "{title} removed.": "{title}: recurso eliminado.",
+  "Open source": "Abrir recurso",
+  Video: "Vídeo",
+  Social: "Red social",
+  Article: "Artículo",
+  "Your sources and progress are saved in this browser. No account, no feed. Just what helps you grow.":
+    "Tus recursos y tu progreso se guardan en este navegador. Sin cuenta ni distracciones. Solo lo que te ayuda a avanzar.",
+  "SAVE SOMETHING THAT MOVES YOU": "GUARDA ALGO QUE TE MUEVA",
+  "Add a {style} source": "Añade un recurso de {style}",
+  "Cancel adding source": "Cancelar recurso",
+  Name: "Nombre",
+  Link: "Enlace",
+  "e.g. My favorite basic step tutorial":
+    "Ej.: Mi tutorial favorito del paso básico",
+  "YouTube, an article, a social account. Keep your inspiration in one place.":
+    "YouTube, un artículo o una cuenta social. Toda tu inspiración en un lugar.",
+  "Give your source a name.": "Dale un nombre al recurso.",
+  "Enter a complete web address starting with https:// or http://.":
+    "Introduce una dirección completa que empiece por https:// o http://.",
+  "Save source": "Guardar recurso",
+  "Back to your practice": "Volver a tu práctica",
+  "Step {step} of 3": "Paso {step} de 3",
+  Learn: "Aprende",
+  Practice: "Practica",
+  Reflect: "Repasa",
+  "A LITTLE FURTHER THAN YESTERDAY": "UN POCO MÁS LEJOS QUE AYER",
+  "Look at you": "Mira cómo",
+  "go.": "avanzas.",
+  "You made time to move. That’s what counts.":
+    "Has dedicado un rato a moverte. Eso es lo que cuenta.",
+  "“{title}” is complete.": "Has completado «{title}».",
+  "Let this little lesson settle in.":
+    "Deja que esta pequeña lección se asiente.",
+  "Come back tomorrow for your next step.":
+    "Vuelve mañana para dar el siguiente paso.",
+  "Back to my day": "Volver a mi día",
+  FOUNDATIONS: "FUNDAMENTOS",
+  "Make a little room to move.": "Haz un hueco para moverte.",
+  "Let’s make it stick.": "Vamos a afianzarlo.",
+  "Follow the visual count. Repeat as often as you like.":
+    "Sigue el conteo visual. Repite las veces que quieras.",
+  "One quick question before you go.": "Una pregunta rápida antes de terminar.",
+  "Try it out": "Pruébalo",
+  "TAKE THIS WITH YOU": "QUÉDATE CON ESTA IDEA",
+  "Keep it small, keep it comfortable.": "Pasos pequeños y cómodos.",
+  "You’re learning at your own pace.": "Estás aprendiendo a tu ritmo.",
+  "See the foundations": "Ver los fundamentos",
+  "YOUR FOCUS": "TU OBJETIVO",
+  "Use the count for a minute, or move at your own pace. Continue when you feel ready.":
+    "Usa el conteo durante un minuto o muévete a tu ritmo. Continúa cuando te sientas preparado.",
+  "Ready to reflect": "Vamos a repasar",
+  "Revisit the steps": "Volver a los pasos",
+  "Take your time. This is practice, too.":
+    "Tómate tu tiempo. Esto también es práctica.",
+  "That’s it. You’ve got the idea.": "Eso es. Lo has entendido.",
+  "Not quite. Think back to the steps, and have another go.":
+    "Casi. Recuerda los pasos e inténtalo otra vez.",
+  "Review the steps": "Repasar los pasos",
+  "Finish lesson": "Terminar lección",
+  "Browser storage is unavailable. Your progress will last for this visit only.":
+    "El almacenamiento del navegador no está disponible. Tu progreso solo durará esta visita.",
+  "Ritmo home": "Inicio de Ritmo",
+  "A little dance, every day.": "Un poco de baile, cada día.",
+  "YOUR DANCE FLOOR": "TU PISTA DE BAILE",
+  "Main navigation": "Navegación principal",
+  "Progress is a practice,": "El progreso es una práctica,",
+  "not a destination.": "no un destino.",
+  "Just you. No account needed.": "Solo tú. Sin necesidad de cuenta.",
+  "Your space to move": "Tu espacio para moverte",
+  "A little lesson": "Una pequeña lección",
+  "ONE STEP AT A TIME": "UN PASO CADA DÍA",
+  "Small steps. Every day.": "Pequeños pasos. Cada día.",
+  "Made for the joy of moving.": "Por el placer de moverse.",
+  "YOUR ONE-MINUTE PRACTICE": "TU MINUTO DE PRÁCTICA",
+  "Practice time remaining": "Tiempo de práctica restante",
+  "Step on 1, 2, 3, 5, 6, 7; hold on 4 and 8":
+    "Paso en 1, 2, 3, 5, 6, 7; pausa en 4 y 8",
+  "Step on 1, 2, 3, 5, 6, 7; tap on 4 and 8":
+    "Paso en 1, 2, 3, 5, 6, 7; toque en 4 y 8",
+  "One minute, well spent. Repeat or continue when you’re ready.":
+    "Un minuto bien aprovechado. Repite o continúa cuando quieras.",
+  "Follow the count. Small steps, soft knees.":
+    "Sigue el conteo. Pasos pequeños, rodillas relajadas.",
+  "A visual count to help you settle into the rhythm.":
+    "Un conteo visual para ayudarte a encontrar el ritmo.",
+  "Practice tempo": "Velocidad de práctica",
+  "Pause practice": "Pausar práctica",
+  "Start practice": "Iniciar práctica",
+  "Resume practice": "Reanudar práctica",
+  "Reset practice": "Reiniciar práctica",
+  "VIDEO TUTORIAL": "VIDEOTUTORIAL",
+  "Watch the tutorial": "Ver el tutorial",
+  "Video tutorial: {title}": "Videotutorial: {title}",
+  "Watch on the original site": "Ver en la página original",
+  "Spanish audio": "Audio en español",
+  "English audio": "Audio en inglés",
+  "Focus on this lesson’s steps. You can pause and replay the demonstration.":
+    "Céntrate en los pasos de esta lección. Puedes pausar y repetir la demostración.",
+  "If the player is unavailable, watch the tutorial on the original site.":
+    "Si el reproductor no está disponible, abre el tutorial en su página original.",
+};
