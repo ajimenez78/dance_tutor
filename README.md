@@ -2,6 +2,8 @@
 
 A small React dance tutor for Salsa and Bachata, built with React, TypeScript and Vite. Spanish by default, with an English language selector. No account or backend; data stays in this browser.
 
+**Live app:** [Try Ritmo](https://main.d3k2uxz8qd3ag0.amplifyapp.com/) — hosted on AWS Amplify.
+
 ## What you can do
 
 - Work through eight short lessons: learn the steps, practice and answer a quick question.
