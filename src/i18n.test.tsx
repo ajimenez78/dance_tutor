@@ -13,6 +13,11 @@ import { spanishLessons } from "./lessons.es";
 import { spanish } from "./translations";
 import { tutorials } from "./videos";
 import VideoTutorial from "./VideoTutorial";
+import {
+  bachataPlaylist,
+  bachataPlaylistUrl,
+  playlistVideoUrl,
+} from "./bachataPlaylist";
 
 describe("languages", () => {
   it("has a Spanish translation for every literal interface message", () => {
@@ -100,6 +105,20 @@ describe("languages", () => {
 });
 
 describe("bilingual lessons and tutorials", () => {
+  it("keeps the complete Alfonso y Mónica Bachata playlist classified by level", () => {
+    expect(bachataPlaylist).toHaveLength(54);
+    expect(new Set(bachataPlaylist.map((video) => video[0])).size).toBe(54);
+    expect(new URL(bachataPlaylistUrl).searchParams.get("list")).toBe(
+      "PL2hC4eLPfJuMsjVBE8qFywgchnsRKB2vB",
+    );
+    expect(new Set(bachataPlaylist.map((video) => video[2]))).toEqual(
+      new Set(["initial", "foundations", "intermediate"]),
+    );
+    expect(playlistVideoUrl(bachataPlaylist[0][0])).toContain(
+      bachataPlaylist[0][0],
+    );
+  });
+
   it("provides full Spanish content with the same stable lesson IDs and quiz structure", () => {
     for (const style of ["salsa", "bachata"] as const) {
       spanishLessons[style].forEach((lesson, index) => {

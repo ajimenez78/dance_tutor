@@ -1,9 +1,100 @@
 import { test, expect } from "@playwright/test";
+import type { Page } from "@playwright/test";
 import { lessons } from "../src/lessons";
+import type { Style } from "../src/lessons";
 import { spanishLessons } from "../src/lessons.es";
 import { tutorials } from "../src/videos";
 import { translate } from "../src/i18n";
 import type { Language } from "../src/i18n";
+import {
+  bachataPlaylist,
+  playlistVideoUrl,
+} from "../src/bachataPlaylist";
+import { playlistLevels, playlists } from "../src/playlists";
+
+const playlistCombinations = [
+  { style: "bachata", language: "es" },
+  { style: "bachata", language: "en" },
+  { style: "salsa", language: "es" },
+  { style: "salsa", language: "en" },
+] as const;
+
+const playlistLevelLabels = {
+  initial: "Initial level",
+  foundations: "Foundations and figures",
+  intermediate: "Intermediate level and style",
+} as const;
+
+async function expectPlaylist(
+  page: Page,
+  style: Style,
+  language: Language,
+) {
+  const playlist = playlists[style][language];
+  const section = page.getByRole("region", { name: playlist.title, exact: true });
+
+  await expect(section).toBeVisible();
+  await expect(
+    section.getByText(playlist.attribution, { exact: true }),
+  ).toBeVisible();
+  await expect(
+    section.getByRole("link", {
+      name: translate(language, "View full playlist"),
+    }),
+  ).toHaveAttribute("href", playlist.url);
+
+  const videoLinks = section
+    .getByRole("link")
+    .filter({ hasText: translate(language, "Watch video") });
+  await expect(videoLinks).toHaveCount(playlist.videos.length);
+  const actualUrls = await videoLinks.evaluateAll((links) =>
+    links.map((link) => (link as HTMLAnchorElement).href),
+  );
+  expect(actualUrls.sort()).toEqual(
+    playlist.videos.map(([id]) => playlistVideoUrl(id)).sort(),
+  );
+
+  for (const level of playlistLevels) {
+    const levelCount = playlist.videos.filter(
+      (video) => video[2] === level,
+    ).length;
+    const levelSection = section
+      .locator(".playlist-level")
+      .nth(playlistLevels.indexOf(level));
+    await expect(
+      levelSection.getByRole("heading", {
+        name: translate(language, playlistLevelLabels[level]),
+        exact: true,
+      }),
+    ).toBeVisible();
+    await expect(
+      levelSection.getByText(
+        `${levelCount} ${translate(language, "videos")}`,
+        { exact: true },
+      ),
+    ).toBeVisible();
+  }
+
+  for (const combination of playlistCombinations) {
+    if (
+      combination.style !== style ||
+      combination.language !== language
+    ) {
+      await expect(
+        page.getByRole("heading", {
+          name: playlists[combination.style][combination.language].title,
+          exact: true,
+        }),
+      ).toHaveCount(0);
+    }
+  }
+
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= window.innerWidth,
+    ),
+  ).toBe(true);
+}
 
 test("starts in Spanish regardless of browser locale and remembers an English preference", async ({
   page,
@@ -32,6 +123,92 @@ test("starts in Spanish regardless of browser locale and remembers an English pr
   await expect(page.getByRole("combobox", { name: "Language" })).toHaveValue(
     "en",
   );
+});
+
+test("Spanish Bachata path shows the complete Alfonso y Mónica playlist by level", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Empezar con Bachata" }).click();
+  await page.getByRole("button", { name: "Mi recorrido", exact: true }).click();
+  await expect(
+    page.getByRole("heading", { name: "Bachata paso a paso" }),
+  ).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Nivel inicial" })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Fundamentos y figuras" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Nivel intermedio y estilo" }),
+  ).toBeVisible();
+  await expect(page.locator(".playlist-video")).toHaveCount(
+    bachataPlaylist.length,
+  );
+  await expect(page.getByRole("link", { name: /Ver playlist completa/ })).toHaveAttribute(
+    "href",
+    expect.stringContaining("PL2hC4eLPfJuMsjVBE8qFywgchnsRKB2vB"),
+  );
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= window.innerWidth,
+    ),
+  ).toBe(true);
+});
+
+for (const { style, language } of playlistCombinations) {
+  test(`${language} ${style} path shows only its complete playlist`, async ({
+    page,
+  }) => {
+    await page.goto("/");
+    await page.getByRole("combobox", { name: "Idioma" }).selectOption(language);
+    const styleName = style === "salsa" ? "Salsa" : "Bachata";
+    await page
+      .getByRole("button", {
+        name: translate(language, "Start with {style}", {
+          style: styleName,
+        }),
+      })
+      .click();
+    await page
+      .getByRole("button", {
+        name: translate(language, "Learning path"),
+        exact: true,
+      })
+      .click();
+
+    await expectPlaylist(page, style, language);
+  });
+}
+
+test("switching language and dance style switches to the matching playlist", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Empezar con Bachata" }).click();
+  await page.getByRole("button", { name: "Mi recorrido", exact: true }).click();
+  await expectPlaylist(page, "bachata", "es");
+
+  await page.getByRole("combobox", { name: "Idioma" }).selectOption("en");
+  await expectPlaylist(page, "bachata", "en");
+
+  await page
+    .getByRole("combobox", { name: translate("en", "YOUR DANCE FLOOR") })
+    .selectOption("salsa");
+  await page
+    .getByRole("button", { name: "Learning path", exact: true })
+    .click();
+  await expectPlaylist(page, "salsa", "en");
+
+  await page.getByRole("combobox", { name: "Language" }).selectOption("es");
+  await expectPlaylist(page, "salsa", "es");
+
+  await page
+    .getByRole("combobox", { name: translate("es", "YOUR DANCE FLOOR") })
+    .selectOption("bachata");
+  await page
+    .getByRole("button", { name: "Mi recorrido", exact: true })
+    .click();
+  await expectPlaylist(page, "bachata", "es");
 });
 
 for (const language of ["es", "en"] as Language[]) {

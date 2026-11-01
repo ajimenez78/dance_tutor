@@ -1144,6 +1144,99 @@ p {
   font-size: 11px;
   align-items: center;
 }
+.playlist-section {
+  margin-top: 54px;
+}
+.playlist-heading {
+  align-items: flex-end;
+  margin-bottom: 28px;
+}
+.playlist-heading h2 {
+  font-size: 31px;
+  margin: 10px 0 7px;
+}
+.playlist-heading p {
+  max-width: 560px;
+  color: #626f55;
+  font-size: 12px;
+  line-height: 1.7;
+}
+.playlist-heading .text-button {
+  flex-shrink: 0;
+  color: #626f55;
+  font-size: 11px;
+}
+.playlist-level {
+  margin-top: 30px;
+}
+.playlist-level-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 10px;
+}
+.playlist-level-heading h3 {
+  font-family: var(--serif);
+  font-size: 25px;
+  font-weight: 400;
+  margin: 0;
+}
+.playlist-level-heading span {
+  color: #626f55;
+  font-size: 11px;
+}
+.playlist-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 16px;
+  margin-top: 14px;
+}
+.playlist-video {
+  display: flex;
+  align-items: flex-start;
+  gap: 13px;
+  min-width: 0;
+  padding: 14px 15px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  color: inherit;
+  background: #fffefa;
+  text-decoration: none;
+  transition: border-color 160ms ease, transform 160ms ease;
+}
+.playlist-video:hover,
+.playlist-video:focus-visible {
+  border-color: #a8b899;
+  transform: translateY(-1px);
+}
+.playlist-index {
+  color: #626f55;
+  font-family: var(--serif);
+  font-size: 20px;
+  line-height: 1;
+}
+.playlist-video-copy {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+.playlist-video-copy strong {
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+.playlist-video-copy span {
+  color: #626f55;
+  font-size: 10px;
+}
+.playlist-video > svg {
+  flex-shrink: 0;
+  color: #626f55;
+}
 .library-empty {
   display: flex;
   flex-direction: column;
@@ -2319,6 +2412,22 @@ input[type="range"] {
   }
   .section-heading .eyebrow {
     font-size: 9px;
+  }
+  .playlist-section {
+    margin-top: 38px;
+  }
+  .playlist-heading {
+    align-items: flex-start;
+    gap: 15px;
+  }
+  .playlist-heading h2 {
+    font-size: 25px;
+  }
+  .playlist-grid {
+    grid-template-columns: 1fr;
+  }
+  .playlist-level-heading h3 {
+    font-size: 22px;
   }
   .path-card {
     padding: 18px 19px 0;

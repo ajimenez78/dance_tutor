@@ -39,8 +39,16 @@ import {
 } from "./model";
 import type { Progress, Source, StartingStage } from "./model";
 import Practice from "./Practice";
+import { playlistVideoUrl } from "./bachataPlaylist";
+import { playlistLevels, playlists } from "./playlists";
+import type { PlaylistLevel } from "./playlists";
 
 type Tab = "Today" | "Learning path" | "My library";
+const playlistLevelLabels: Record<PlaylistLevel, string> = {
+  initial: "Initial level",
+  foundations: "Foundations and figures",
+  intermediate: "Intermediate level and style",
+};
 const tabs: { name: Tab; icon: LucideIcon }[] = [
   { name: "Today", icon: Leaf },
   { name: "Learning path", icon: Footprints },
@@ -507,11 +515,12 @@ function LearningPath({
   onOpen: (lesson: Lesson) => void;
   onStageChange: (stage: StartingStage) => void;
 }) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { lessons, styles } = useContent();
   const count = lessons[style].filter((lesson) =>
     progress.completed.includes(lesson.id),
   ).length;
+  const playlist = playlists[style][language];
   return (
     <>
       <div className="page-heading">
@@ -582,6 +591,58 @@ function LearningPath({
           </div>
         </aside>
       </div>
+      <section className="playlist-section" aria-labelledby="playlist-title">
+        <div className="section-heading playlist-heading">
+          <div>
+            <span className="eyebrow">{playlist.attribution}</span>
+            <h2 id="playlist-title">{playlist.title}</h2>
+            <p>{playlist.description}</p>
+          </div>
+          <a
+            className="text-button"
+            href={playlist.url}
+            target="_blank"
+            rel="noreferrer"
+          >
+            {t("View full playlist")}
+            <ExternalLink size={14} />
+            <span className="sr-only">{t(" (opens in a new tab)")}</span>
+          </a>
+        </div>
+        {playlistLevels.map((level) => {
+          const videos = playlist.videos.filter((video) => video[2] === level);
+          return (
+            <div className="playlist-level" key={level}>
+              <div className="playlist-level-heading">
+                <h3>{t(playlistLevelLabels[level])}</h3>
+                <span>
+                  {videos.length} {t("videos")}
+                </span>
+              </div>
+              <div className="playlist-grid">
+                {videos.map((video, index) => (
+                  <a
+                    className="playlist-video"
+                    href={playlistVideoUrl(video[0])}
+                    target="_blank"
+                    rel="noreferrer"
+                    key={video[0]}
+                  >
+                    <span className="playlist-index">
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+                    <span className="playlist-video-copy">
+                      <strong>{video[1]}</strong>
+                      <span>{t("Watch video")}</span>
+                    </span>
+                    <ExternalLink size={15} />
+                  </a>
+                ))}
+              </div>
+            </div>
+          );
+        })}
+      </section>
     </>
   );
 }

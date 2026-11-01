@@ -84,6 +84,12 @@ export const spanish: Record<string, string> = {
     "Cuatro pequeñas lecciones para empezar a moverte.",
   "Foundations complete. Keep practicing to make them yours.":
     "Fundamentos completados. Sigue practicando para hacerlos tuyos.",
+  "View full playlist": "Ver playlist completa",
+  "Initial level": "Nivel inicial",
+  "Foundations and figures": "Fundamentos y figuras",
+  "Intermediate level and style": "Nivel intermedio y estilo",
+  videos: "vídeos",
+  "Watch video": "Ver vídeo",
   "THE FEEL OF {style}": "EL RITMO DE {style}",
   "Explore with Dance Dojo": "Descubre más con Dance Dojo",
   " (opens in a new tab)": " (se abre en otra pestaña)",
