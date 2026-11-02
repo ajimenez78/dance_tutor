@@ -47,6 +47,13 @@ async function expectPlaylist(
     .getByRole("link")
     .filter({ hasText: translate(language, "Watch video") });
   await expect(videoLinks).toHaveCount(playlist.videos.length);
+  await expect(section.locator(".playlist-video-copy strong")).toHaveText(
+    playlistLevels.flatMap((level) =>
+      playlist.videos
+        .filter((video) => video[2] === level)
+        .map(([, title]) => title),
+    ),
+  );
   const actualUrls = await videoLinks.evaluateAll((links) =>
     links.map((link) => (link as HTMLAnchorElement).href),
   );

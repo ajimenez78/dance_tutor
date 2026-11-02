@@ -37,6 +37,28 @@ const expectedPlaylists = [
 ] as const;
 
 describe("learning playlists", () => {
+  it("uses the source's Spanish-localized titles in Spanish playlists", () => {
+    const spanishBachataTitles = new Map(
+      playlists.bachata.es.videos.map(([id, title]) => [id, title]),
+    );
+    const spanishSalsaTitles = new Map(
+      playlists.salsa.es.videos.map(([id, title]) => [id, title]),
+    );
+
+    expect(spanishBachataTitles.get("hMuMCmtoVyw")).toBe(
+      "Pasos básicos de BACHATA | Como bailar BACHATA en pareja | Aprende a bailar BACHATA desde 0",
+    );
+    expect(spanishSalsaTitles.get("IbBBYxbtz-w")).toBe(
+      "1. Pasos Básicos de Salsa | Aprende a bailar salsa con Alfonso y Mónica | Clases de salsa",
+    );
+    expect(spanishSalsaTitles.get("s1sPRjGh5KU")).toBe(
+      "3. Giro a la Derecha | Pasos Básicos de Salsa | Aprende a bailar salsa con Alfonso y Mónica",
+    );
+    expect(spanishSalsaTitles.get("BCRhbOgHTGY")).toBe(
+      "Salsa Footwork | Trabajo Individual | Alfonso y Mónica",
+    );
+  });
+
   it.each(expectedPlaylists)(
     "$language $style playlist has complete, uniquely classified metadata",
     ({ style, language, url, count, levels }) => {
