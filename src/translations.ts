@@ -78,16 +78,39 @@ export const spanish: Record<string, string> = {
   "SMALL STEPS. SOLID FOUNDATIONS.": "PEQUEÑOS PASOS. UNA BASE FIRME.",
   "One idea at a time. Revisit any lesson whenever you like.":
     "Una idea cada vez. Vuelve a cualquier lección cuando quieras.",
-  "CHAPTER 01": "CAPÍTULO 01",
+  "CHAPTER {number}": "CAPÍTULO {number}",
   "The foundations": "Los fundamentos",
   "Four little lessons to get you moving.":
-    "Cuatro pequeñas lecciones para empezar a moverte.",
-  "Foundations complete. Keep practicing to make them yours.":
-    "Fundamentos completados. Sigue practicando para hacerlos tuyos.",
-  "View full playlist": "Ver playlist completa",
+    "Cuatro lecciones guiadas para empezar a moverte.",
+  "Additional video chapters": "Más capítulos en vídeo",
+  "Follow the tutorial and practice one movement at a time.":
+    "Sigue el tutorial y practica un movimiento cada vez.",
   "Initial level": "Nivel inicial",
   "Foundations and figures": "Fundamentos y figuras",
   "Intermediate level and style": "Nivel intermedio y estilo",
+  "This chapter follows the creator's video. Watch it once, then use the steps to practice at your own pace.":
+    "Este capítulo se basa en el vídeo de su creador. Primero míralo una vez; después, usa los pasos para practicar a tu ritmo.",
+  "Watch the full tutorial to see the sequence.":
+    "Mira el tutorial completo para descubrir la secuencia.",
+  "Choose one movement and notice how the instructor demonstrates it.":
+    "Elige un movimiento y fíjate en cómo lo demuestra el instructor.",
+  "Replay that section and practice it slowly.":
+    "Vuelve a ver ese fragmento y practícalo despacio.",
+  "Repeat the sequence when you feel ready.":
+    "Repite la secuencia cuando te sientas preparado.",
+  "Focus on one movement at a time and keep your practice comfortable.":
+    "Concéntrate en un movimiento cada vez y mantén la práctica cómoda.",
+  "How can you make the most of this tutorial?":
+    "¿Cómo puedes aprovechar mejor este tutorial?",
+  "Watch it, then practice the sequence a little at a time.":
+    "Mirarlo y practicar la secuencia poco a poco.",
+  "Try to memorize everything in one viewing.":
+    "Intentar memorizar todo en una sola visualización.",
+  "Move faster without pausing to practice.":
+    "Hacer los movimientos cada vez más rápido sin pausas.",
+  "Foundations complete. Keep practicing to make them yours.":
+    "Fundamentos completados. Sigue practicando para hacerlos tuyos.",
+  "View full playlist": "Ver playlist completa",
   videos: "vídeos",
   "Watch video": "Ver vídeo",
   "THE FEEL OF {style}": "EL RITMO DE {style}",

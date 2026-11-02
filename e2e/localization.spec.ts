@@ -31,9 +31,12 @@ async function expectPlaylist(
   language: Language,
 ) {
   const playlist = playlists[style][language];
-  const section = page.getByRole("region", { name: playlist.title, exact: true });
+  const section = page.getByRole("region", {
+    name: translate(language, "The foundations"),
+    exact: true,
+  });
 
-  await expect(section).toBeVisible();
+  await expect(section.getByRole("heading", { name: playlist.title })).toBeVisible();
   await expect(
     section.getByText(playlist.attribution, { exact: true }),
   ).toBeVisible();
@@ -43,43 +46,101 @@ async function expectPlaylist(
     }),
   ).toHaveAttribute("href", playlist.url);
 
-  const videoLinks = section
-    .getByRole("link")
-    .filter({ hasText: translate(language, "Watch video") });
-  await expect(videoLinks).toHaveCount(playlist.videos.length);
-  await expect(section.locator(".playlist-video-copy strong")).toHaveText(
+  const videoButtons = section.locator(".playlist-level .lesson-row");
+  await expect(videoButtons).toHaveCount(playlist.videos.length);
+  await expect(section.locator(".playlist-level .lesson-row strong")).toHaveText(
     playlistLevels.flatMap((level) =>
       playlist.videos
         .filter((video) => video[2] === level)
         .map(([, title]) => title),
     ),
   );
-  const actualUrls = await videoLinks.evaluateAll((links) =>
-    links.map((link) => (link as HTMLAnchorElement).href),
+  const firstVideo = playlistLevels.flatMap((level) =>
+    playlist.videos.filter((video) => video[2] === level),
+  )[0];
+  await videoButtons.first().click();
+  await expect(
+    page.getByRole("heading", {
+      name: firstVideo[1],
+      exact: true,
+    }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("link", {
+      name: new RegExp(translate(language, "Watch on the original site")),
+    }),
+  ).toHaveAttribute("href", playlistVideoUrl(firstVideo[0]));
+  await page
+    .getByRole("button", { name: translate(language, "Watch the tutorial") })
+    .click();
+  await expect(
+    page.getByTitle(
+      translate(language, "Video tutorial: {title}", {
+        title: firstVideo[1],
+      }),
+    ),
+  ).toHaveAttribute(
+    "src",
+    `https://www.youtube-nocookie.com/embed/${firstVideo[0]}?autoplay=1&hl=${language}`,
   );
-  expect(actualUrls.sort()).toEqual(
-    playlist.videos.map(([id]) => playlistVideoUrl(id)).sort(),
-  );
+  await page
+    .getByRole("button", { name: translate(language, "Back to your practice") })
+    .click();
+  await videoButtons.first().click();
+  await page.getByRole("button", { name: translate(language, "Try it out") }).click();
+  await page
+    .getByRole("button", { name: translate(language, "Ready to reflect") })
+    .click();
+  await page
+    .getByRole("button", {
+      name: translate(
+        language,
+        "Watch it, then practice the sequence a little at a time.",
+      ),
+    })
+    .click();
+  await page
+    .getByRole("button", { name: translate(language, "Finish lesson") })
+    .click();
+  await expect(
+    page.getByText(
+      translate(language, "“{title}” is complete.", { title: firstVideo[1] }),
+    ),
+  ).toBeVisible();
+  await page
+    .getByRole("button", { name: translate(language, "Back to my day") })
+    .click();
 
   for (const level of playlistLevels) {
     const levelCount = playlist.videos.filter(
       (video) => video[2] === level,
     ).length;
-    const levelSection = section
-      .locator(".playlist-level")
-      .nth(playlistLevels.indexOf(level));
-    await expect(
-      levelSection.getByRole("heading", {
-        name: translate(language, playlistLevelLabels[level]),
-        exact: true,
-      }),
-    ).toBeVisible();
+    const levelHeading = section.getByRole("heading", {
+      name: translate(language, playlistLevelLabels[level]),
+      exact: true,
+    });
+    if (levelCount === 0) {
+      await expect(levelHeading).toHaveCount(0);
+      continue;
+    }
+    await expect(levelHeading).toBeVisible();
+    const levelSection = section.getByRole("region", {
+      name: translate(language, playlistLevelLabels[level]),
+      exact: true,
+    });
     await expect(
       levelSection.getByText(
         `${levelCount} ${translate(language, "videos")}`,
         { exact: true },
       ),
     ).toBeVisible();
+    await expect(levelSection.locator(".lesson-row")).toHaveCount(levelCount);
+    await expect(levelSection.getByRole("button")).toHaveCount(levelCount);
+    await expect(levelSection.locator(".playlist-video")).toHaveCount(0);
+    await expect(levelSection.locator(".path-total")).toHaveText(
+      new RegExp(`\\d+\\s*/\\s*${levelCount}`),
+    );
+    await expect(levelSection.locator(".progress-track")).toBeVisible();
   }
 
   for (const combination of playlistCombinations) {
@@ -148,7 +209,7 @@ test("Spanish Bachata path shows the complete Alfonso y Mónica playlist by leve
   await expect(
     page.getByRole("heading", { name: "Nivel intermedio y estilo" }),
   ).toBeVisible();
-  await expect(page.locator(".playlist-video")).toHaveCount(
+  await expect(page.locator(".playlist-level .lesson-row")).toHaveCount(
     bachataPlaylist.length,
   );
   await expect(page.getByRole("link", { name: /Ver playlist completa/ })).toHaveAttribute(

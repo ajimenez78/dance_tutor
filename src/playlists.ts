@@ -1,7 +1,11 @@
 import type { Language } from "./i18n";
-import { bachataPlaylist, bachataPlaylistUrl } from "./bachataPlaylist";
+import {
+  bachataPlaylist,
+  bachataPlaylistUrl,
+  playlistVideoUrl,
+} from "./bachataPlaylist";
 import type { BachataPlaylistLevel } from "./bachataPlaylist";
-import type { Style } from "./lessons";
+import type { Lesson, Style } from "./lessons";
 
 export type PlaylistLevel = BachataPlaylistLevel;
 export type PlaylistVideo = readonly [
@@ -121,3 +125,75 @@ export const playlists: Record<
     },
   },
 };
+
+export function playlistLessons(
+  style: Style,
+  language: Language,
+): Lesson[] {
+  const playlist = playlists[style][language];
+  const spanish = language === "es";
+
+  return playlistLevels.flatMap((level) =>
+    playlist.videos
+      .filter((video) => video[2] === level)
+      .map(([youtubeId, title]) => ({
+        id: `playlist-${style}-${youtubeId}`,
+        playlistLevel: level,
+        title,
+        subtitle: spanish
+          ? "Sigue el tutorial y practica un movimiento cada vez."
+          : "Follow the tutorial and practice one movement at a time.",
+        tag: spanish
+          ? {
+              initial: "Nivel inicial",
+              foundations: "Fundamentos y figuras",
+              intermediate: "Nivel intermedio y estilo",
+            }[level]
+          : {
+              initial: "Initial level",
+              foundations: "Foundations and figures",
+              intermediate: "Intermediate level and style",
+            }[level],
+        learn: spanish
+          ? "Este capítulo se basa en el vídeo de su creador. Primero míralo una vez; después, usa los pasos para practicar a tu ritmo."
+          : "This chapter follows the creator's video. Watch it once, then use the steps to practice at your own pace.",
+        steps: spanish
+          ? [
+              "Mira el tutorial completo para descubrir la secuencia.",
+              "Elige un movimiento y fíjate en cómo lo demuestra el instructor.",
+              "Vuelve a ver ese fragmento y practícalo despacio.",
+              "Repite la secuencia cuando te sientas preparado.",
+            ]
+          : [
+              "Watch the full tutorial to see the sequence.",
+              "Choose one movement and notice how the instructor demonstrates it.",
+              "Replay that section and practice it slowly.",
+              "Repeat the sequence when you feel ready.",
+            ],
+        tip: spanish
+          ? "Concéntrate en un movimiento cada vez y mantén la práctica cómoda."
+          : "Focus on one movement at a time and keep your practice comfortable.",
+        question: spanish
+          ? "¿Cómo puedes aprovechar mejor este tutorial?"
+          : "How can you make the most of this tutorial?",
+        answers: spanish
+          ? [
+              "Mirarlo y practicar la secuencia poco a poco.",
+              "Intentar memorizar todo en una sola visualización.",
+              "Hacer los movimientos cada vez más rápido sin pausas.",
+            ]
+          : [
+              "Watch it, then practice the sequence a little at a time.",
+              "Try to memorize everything in one viewing.",
+              "Move faster without pausing to practice.",
+            ],
+        correct: 0,
+        tutorial: {
+          youtubeId,
+          author: playlist.attribution,
+          source: playlistVideoUrl(youtubeId),
+          audioLanguage: language,
+        },
+      })),
+  );
+}

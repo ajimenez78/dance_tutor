@@ -7,7 +7,7 @@ import type { Tutorial } from "./videos";
 
 export default function VideoTutorial({ lesson }: { lesson: Lesson }) {
   const { language } = useLanguage();
-  const video = tutorials[lesson.id][language];
+  const video = lesson.tutorial ?? tutorials[lesson.id][language];
   return (
     <TutorialPlayer
       key={`${lesson.id}-${video.youtubeId}`}

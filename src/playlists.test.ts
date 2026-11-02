@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   playlistLevels,
+  playlistLessons,
   playlists,
 } from "./playlists";
 import { playlistVideoUrl } from "./bachataPlaylist";
@@ -82,6 +83,37 @@ describe("learning playlists", () => {
       expect(playlistVideoUrl(ids[0])).toBe(
         `https://www.youtube.com/watch?v=${ids[0]}`,
       );
+    },
+  );
+
+  it.each(expectedPlaylists)(
+    "$language $style playlist videos become complete guided lessons",
+    ({ style, language, count }) => {
+      const sourceVideos = playlists[style][language].videos;
+      const lessons = playlistLessons(style, language);
+      const levelOrderedVideos = playlistLevels.flatMap((level) =>
+        sourceVideos.filter((video) => video[2] === level),
+      );
+
+      expect(lessons).toHaveLength(count);
+      expect(new Set(lessons.map((lesson) => lesson.id)).size).toBe(count);
+      expect(lessons.map((lesson) => lesson.title)).toEqual(
+        levelOrderedVideos.map(([, title]) => title),
+      );
+      expect(
+        lessons.map((lesson) => lesson.tutorial?.youtubeId),
+      ).toEqual(
+        levelOrderedVideos.map(([youtubeId]) => youtubeId),
+      );
+      for (const lesson of lessons) {
+        const tutorial = lesson.tutorial;
+        if (!tutorial) throw new Error(`${lesson.id} has no tutorial`);
+        expect(tutorial.youtubeId).toBeTruthy();
+        expect(tutorial.audioLanguage).toBe(language);
+        expect(tutorial.source).toBe(playlistVideoUrl(tutorial.youtubeId));
+        expect(lesson.steps).toHaveLength(4);
+        expect(lesson.answers[lesson.correct]).toBeTruthy();
+      }
     },
   );
 });

@@ -39,8 +39,7 @@ import {
 } from "./model";
 import type { Progress, Source, StartingStage } from "./model";
 import Practice from "./Practice";
-import { playlistVideoUrl } from "./bachataPlaylist";
-import { playlistLevels, playlists } from "./playlists";
+import { playlistLevels, playlistLessons, playlists } from "./playlists";
 import type { PlaylistLevel } from "./playlists";
 
 type Tab = "Today" | "Learning path" | "My library";
@@ -521,6 +520,8 @@ function LearningPath({
     progress.completed.includes(lesson.id),
   ).length;
   const playlist = playlists[style][language];
+  const playlistLearningContent = playlistLessons(style, language);
+  const completedLessons = progress.completed;
   return (
     <>
       <div className="page-heading">
@@ -540,11 +541,16 @@ function LearningPath({
       </div>
       <StagePicker value={progress.stages[style]} onChange={onStageChange} />
       <div className="path-page-grid">
-        <section className="full-path path-card">
+        <section
+          className="full-path path-card"
+          aria-labelledby="foundations-title"
+        >
           <div className="path-header">
             <div>
-              <span className="eyebrow">{t("CHAPTER 01")}</span>
-              <h2>{t("The foundations")}</h2>
+              <span className="eyebrow">
+                {t("CHAPTER {number}", { number: "01" })}
+              </span>
+              <h2 id="foundations-title">{t("The foundations")}</h2>
               <p>{t("Four little lessons to get you moving.")}</p>
             </div>
             <span className="path-total">
@@ -567,6 +573,118 @@ function LearningPath({
               {t("Foundations complete. Keep practicing to make them yours.")}
             </p>
           )}
+          <section
+            className="roadmap-videos"
+            aria-labelledby="playlist-title"
+          >
+            <div className="section-heading playlist-heading">
+              <div>
+                <span className="eyebrow">{t("Additional video chapters")}</span>
+                <h3 id="playlist-title">{playlist.title}</h3>
+                <p>
+                  <strong>{playlist.attribution}</strong>
+                  <span className="separator">·</span>
+                  {playlist.description}
+                </p>
+              </div>
+              <a
+                className="text-button"
+                href={playlist.url}
+                target="_blank"
+                rel="noreferrer"
+              >
+                {t("View full playlist")}
+                <ExternalLink size={14} />
+                <span className="sr-only">{t(" (opens in a new tab)")}</span>
+              </a>
+            </div>
+            {playlistLevels
+              .filter((level) =>
+                playlistLearningContent.some(
+                  (item) => item.playlistLevel === level,
+                ),
+              )
+              .map((level, index) => {
+                const levelLessons = playlistLearningContent.filter(
+                  (item) => item.playlistLevel === level,
+                );
+                const completedCount = levelLessons.filter((item) =>
+                  completedLessons.includes(item.id),
+                ).length;
+                const nextLessonId = levelLessons.find(
+                  (item) => !completedLessons.includes(item.id),
+                )?.id;
+                return (
+                  <section
+                    className="playlist-level"
+                    key={level}
+                    aria-labelledby={`playlist-level-${level}`}
+                  >
+                    <div className="path-header">
+                      <div>
+                        <span className="eyebrow">
+                          {t("CHAPTER {number}", {
+                            number: String(index + 2).padStart(2, "0"),
+                          })}
+                        </span>
+                        <h2 id={`playlist-level-${level}`}>
+                          {t(playlistLevelLabels[level])}
+                        </h2>
+                        <p>
+                          {levelLessons.length} {t("videos")}
+                        </p>
+                      </div>
+                      <span className="path-total">
+                        {completedCount}
+                        <small>/ {levelLessons.length}</small>
+                      </span>
+                    </div>
+                    <div className="progress-track">
+                      <span
+                        style={{
+                          width: `${(completedCount / levelLessons.length) * 100}%`,
+                        }}
+                      />
+                    </div>
+                    <div className="lesson-list">
+                      {levelLessons.map((item, videoIndex) => {
+                        const completed = completedLessons.includes(item.id);
+                        return (
+                          <button
+                            className={`lesson-row ${item.id === nextLessonId ? "next" : ""}`}
+                            key={item.id}
+                            onClick={() => onOpen(item)}
+                          >
+                            <span
+                              className={`lesson-number ${completed ? "finished" : ""}`}
+                            >
+                              {completed ? (
+                                <Check size={18} />
+                              ) : (
+                                String(videoIndex + 1).padStart(2, "0")
+                              )}
+                            </span>
+                            <span className="lesson-row-text">
+                              <strong>{item.title}</strong>
+                              <span>
+                                {item.tag}
+                                <span className="separator">·</span>5 min
+                                {completed && (
+                                  <span className="completed-label">
+                                    {t("Completed")}
+                                  </span>
+                                )}
+                              </span>
+                            </span>
+                            <ArrowRight />
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </section>
+                );
+              })}
+          </section>
         </section>
         <aside className="path-aside">
           <RhythmArt style={style} />
@@ -591,58 +709,6 @@ function LearningPath({
           </div>
         </aside>
       </div>
-      <section className="playlist-section" aria-labelledby="playlist-title">
-        <div className="section-heading playlist-heading">
-          <div>
-            <span className="eyebrow">{playlist.attribution}</span>
-            <h2 id="playlist-title">{playlist.title}</h2>
-            <p>{playlist.description}</p>
-          </div>
-          <a
-            className="text-button"
-            href={playlist.url}
-            target="_blank"
-            rel="noreferrer"
-          >
-            {t("View full playlist")}
-            <ExternalLink size={14} />
-            <span className="sr-only">{t(" (opens in a new tab)")}</span>
-          </a>
-        </div>
-        {playlistLevels.map((level) => {
-          const videos = playlist.videos.filter((video) => video[2] === level);
-          return (
-            <div className="playlist-level" key={level}>
-              <div className="playlist-level-heading">
-                <h3>{t(playlistLevelLabels[level])}</h3>
-                <span>
-                  {videos.length} {t("videos")}
-                </span>
-              </div>
-              <div className="playlist-grid">
-                {videos.map((video, index) => (
-                  <a
-                    className="playlist-video"
-                    href={playlistVideoUrl(video[0])}
-                    target="_blank"
-                    rel="noreferrer"
-                    key={video[0]}
-                  >
-                    <span className="playlist-index">
-                      {String(index + 1).padStart(2, "0")}
-                    </span>
-                    <span className="playlist-video-copy">
-                      <strong>{video[1]}</strong>
-                      <span>{t("Watch video")}</span>
-                    </span>
-                    <ExternalLink size={15} />
-                  </a>
-                ))}
-              </div>
-            </div>
-          );
-        })}
-      </section>
     </>
   );
 }
@@ -1098,7 +1164,7 @@ function LessonView({
 }
 
 function DanceTutor() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { lessons } = useContent();
   const [progress, setProgress] = useState(loadProgress);
   const [tab, setTab] = useState<Tab>("Today");
@@ -1147,6 +1213,7 @@ function DanceTutor() {
       </>
     );
   const style = progress.style;
+  const playlistLearningContent = playlistLessons(style, language);
   return (
     <div className="app-shell">
       <aside className="sidebar">
@@ -1237,7 +1304,11 @@ function DanceTutor() {
           {lesson ? (
             <LessonView
               key={lesson.id}
-              lesson={lessons[style].find((item) => item.id === lesson.id)!}
+              lesson={
+                lessons[style].find((item) => item.id === lesson.id) ??
+                playlistLearningContent.find((item) => item.id === lesson.id) ??
+                lesson
+              }
               style={style}
               onClose={() => setLesson(null)}
               onComplete={() =>

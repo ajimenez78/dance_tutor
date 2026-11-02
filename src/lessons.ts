@@ -10,6 +10,13 @@ export type Lesson = {
   question: string;
   answers: string[];
   correct: number;
+  playlistLevel?: "initial" | "foundations" | "intermediate";
+  tutorial?: {
+    youtubeId: string;
+    author: string;
+    source: string;
+    audioLanguage: "es" | "en";
+  };
 };
 
 export const styles = {
