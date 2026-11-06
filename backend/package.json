@@ -1,0 +1,19 @@
+{
+  "name": "dance-tutor-backend",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "serverless offline",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "deploy": "serverless deploy"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.164",
+    "@types/node": "^26.6.6",
+    "serverless-offline": "^14.8.4",
+    "typescript": "^7.0.2",
+    "vitest": "^5.1.0"
+  }
+}
