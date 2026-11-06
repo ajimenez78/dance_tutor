@@ -8,7 +8,8 @@
 - [x] Frontend loads content from `/api` with a loading state, a translated error with retry, an in-memory cache, and no reset of open lessons on language change.
 - [x] Backend unit tests, frontend unit tests with coverage, and the full Playwright suite against the local API pass.
 - [x] Add `amplify.yml` (monorepo `appRoot: frontend`) and document deploy and the `/api` rewrite in the README.
-- [ ] Deploy the API and configure the Amplify rewrite (needs AWS credentials).
+- [x] Deploy the API (`prod`, eu-west-1) and add the Amplify `/api/<*>` rewrite; verified through the live domain.
+- [ ] On merge to `main`: set `AMPLIFY_MONOREPO_APP_ROOT=frontend` in Amplify and verify the live app.
 
 ## Tutorial language matching
 
