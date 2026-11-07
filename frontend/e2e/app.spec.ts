@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { expect, reloadWhenSaved, test } from "./fixtures";
 import type { Page } from "@playwright/test";
 import { lessons } from "../../backend/src/content/lessons";
 import type { Lesson, Style } from "../../backend/src/content/types";
@@ -99,7 +99,7 @@ for (const style of ["salsa", "bachata"] as const) {
     await expect(
       page.getByText("day in a row", { exact: true }).locator(".."),
     ).toHaveText("1day in a row");
-    await page.reload();
+    await reloadWhenSaved(page);
     await expect(page.getByText("4 / 4 lessons")).toBeVisible();
     await expect(
       page.getByRole("combobox", { name: "YOUR DANCE FLOOR" }),
@@ -146,7 +146,7 @@ test("leaving an unfinished lesson does not complete it", async ({ page }) => {
   await page.getByRole("button", { name: "Try it out" }).click();
   await page.getByRole("button", { name: "Back to your practice" }).click();
   await expect(page.getByText("0 / 4 lessons")).toBeVisible();
-  await page.reload();
+  await reloadWhenSaved(page);
   await expect(page.getByText("0 / 4 lessons")).toBeVisible();
 });
 
@@ -194,7 +194,7 @@ test("library supports safe links, persistence, style separation and removal", a
   );
   await expect(link).toHaveAttribute("target", "_blank");
   await expect(link).toHaveAttribute("rel", "noreferrer");
-  await page.reload();
+  await reloadWhenSaved(page);
   await page.getByRole("button", { name: "My library", exact: true }).click();
   await expect(
     page.getByRole("heading", { name: "Salsa basics video" }),
@@ -218,7 +218,7 @@ test("library supports safe links, persistence, style separation and removal", a
   await expect(
     page.getByText("Your library starts with a spark."),
   ).toBeVisible();
-  await page.reload();
+  await reloadWhenSaved(page);
   await page.getByRole("button", { name: "My library", exact: true }).click();
   await expect(
     page.getByText("Your library starts with a spark."),
@@ -269,20 +269,44 @@ test("social and article sources get the right type", async ({ page }) => {
   await expect(page.getByText("Article", { exact: true })).toBeVisible();
 });
 
-test("recovers from corrupt storage and communicates blocked storage", async ({
+test("keeps progress in the API across reloads; a new browser starts fresh", async ({
+  page,
+  browser,
+}) => {
+  await start(page);
+  await page.getByRole("button", { name: "Let’s practice" }).click();
+  await finishLesson(page, lessons.salsa[0]);
+  await page.getByRole("button", { name: "My library", exact: true }).click();
+  await page.getByRole("button", { name: "Save your first source" }).click();
+  await page.getByLabel("Name", { exact: true }).fill("Saved notes");
+  await page
+    .getByLabel("Link", { exact: true })
+    .fill("https://example.com/notes");
+  await page.getByRole("button", { name: "Save source", exact: true }).click();
+  await expect(page.getByRole("status")).toHaveText("Source saved.");
+  await reloadWhenSaved(page);
+  await expect(page.getByText("1 / 4 lessons")).toBeVisible();
+  await page.getByRole("button", { name: "My library", exact: true }).click();
+  await expect(
+    page.getByRole("heading", { name: "Saved notes" }),
+  ).toBeVisible();
+  const fresh = await browser.newPage();
+  await fresh.goto("/");
+  await expect(
+    fresh.getByRole("button", { name: "Empezar con Salsa" }),
+  ).toBeVisible();
+  await fresh.close();
+});
+
+test("communicates blocked storage and still works for the visit", async ({
   page,
 }) => {
-  await page.addInitScript(() => localStorage.setItem("ritmo-v1", "bad json"));
-  await page.goto("/");
-  await expect(
-    page.getByRole("button", { name: "Start with Salsa" }),
-  ).toBeVisible();
   await page.addInitScript(() => {
     Storage.prototype.setItem = () => {
       throw new Error("Blocked");
     };
   });
-  await page.reload();
+  await page.goto("/");
   await expect(page.getByRole("alert")).toContainText(
     "Browser storage is unavailable",
   );

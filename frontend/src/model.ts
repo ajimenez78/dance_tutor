@@ -14,7 +14,6 @@ export type Progress = {
   activity: string[];
   sources: Source[];
 };
-export const STORAGE_KEY = "ritmo-v1";
 export type StartingStage = "rhythm" | "basics" | "flow";
 export const stageStart: Record<StartingStage, number> = {
   rhythm: 0,
@@ -68,44 +67,6 @@ export function nextLesson(
 ): string {
   const available = ids.slice(stageStart[stage]);
   return available.find((id) => !completed.includes(id)) ?? available[0];
-}
-
-export function loadProgress(): Progress {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (!stored) return { ...emptyProgress };
-    const value = JSON.parse(stored) as Progress;
-    if (
-      (value.style !== null &&
-        value.style !== "salsa" &&
-        value.style !== "bachata") ||
-      !Array.isArray(value.completed) ||
-      !value.completed.every((id) => typeof id === "string") ||
-      !Array.isArray(value.activity) ||
-      !value.activity.every((day) => typeof day === "string") ||
-      !Array.isArray(value.sources) ||
-      !value.sources.every(
-        (source) =>
-          source &&
-          typeof source.id === "string" &&
-          typeof source.title === "string" &&
-          (source.style === "salsa" || source.style === "bachata") &&
-          ["Video", "Social", "Article"].includes(source.kind) &&
-          normalizeUrl(source.url),
-      )
-    )
-      return { ...emptyProgress };
-    const storedStage = (style: Style): StartingStage =>
-      ["rhythm", "basics", "flow"].includes(value.stages?.[style])
-        ? value.stages[style]
-        : "rhythm";
-    return {
-      ...value,
-      stages: { salsa: storedStage("salsa"), bachata: storedStage("bachata") },
-    };
-  } catch {
-    return { ...emptyProgress };
-  }
 }
 
 export function normalizeUrl(input: string): string | null {

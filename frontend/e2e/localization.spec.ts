@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { expect, reloadWhenSaved, test } from "./fixtures";
 import type { Page } from "@playwright/test";
 import { lessons } from "../../backend/src/content/lessons";
 import type { Style } from "../../backend/src/content/types";
@@ -186,7 +186,7 @@ test("starts in Spanish regardless of browser locale and remembers an English pr
   await expect(
     page.getByRole("heading", { name: /Find your rhythm/ }),
   ).toBeVisible();
-  await page.reload();
+  await reloadWhenSaved(page);
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
   await expect(page.getByRole("combobox", { name: "Language" })).toHaveValue(
     "en",
@@ -372,7 +372,7 @@ for (const language of ["es", "en"] as Language[]) {
       await expect(
         page.getByText(t("{count} / 4 lessons", { count: 0 })),
       ).toBeVisible();
-      await page.reload();
+      await reloadWhenSaved(page);
       await expect(
         page.getByRole("heading", { name: lesson.title + "." }),
       ).toBeVisible();
@@ -506,7 +506,7 @@ test("keeps stage preferences independent per style", async ({ page }) => {
   await page
     .getByRole("combobox", { name: "TU PISTA DE BAILE" })
     .selectOption("bachata");
-  await page.reload();
+  await reloadWhenSaved(page);
   await expect(
     page.getByRole("heading", { name: "Encuentra tu fluidez." }),
   ).toBeVisible();
@@ -590,43 +590,4 @@ test("Spanish validation translates in place without clearing user input", async
   ).toBeVisible();
   await expect(page.getByText("Vídeo", { exact: true })).toBeVisible();
   await expect(page.getByRole("status")).toHaveText("Recurso guardado.");
-});
-
-test("migrates earlier browser data without losing completed lessons or sources", async ({
-  page,
-}) => {
-  await page.goto("/");
-  await page.evaluate(() =>
-    localStorage.setItem(
-      "ritmo-v1",
-      JSON.stringify({
-        style: "salsa",
-        completed: ["salsa-rhythm"],
-        activity: ["2026-10-29"],
-        sources: [
-          {
-            id: "old-source",
-            title: "My original notes",
-            url: "https://example.com/notes",
-            style: "salsa",
-            kind: "Article",
-          },
-        ],
-      }),
-    ),
-  );
-  await page.reload();
-  await expect(page.getByText("1 / 4 lecciones")).toBeVisible();
-  await expect(
-    page.getByRole("heading", { name: "Tu primer paso básico." }),
-  ).toBeVisible();
-  await page
-    .getByRole("button", { name: "Mi biblioteca", exact: true })
-    .click();
-  await expect(
-    page.getByRole("heading", { name: "My original notes" }),
-  ).toBeVisible();
-  await expect(
-    page.getByRole("link", { name: /Abrir recurso/ }),
-  ).toHaveAttribute("href", "https://example.com/notes");
 });

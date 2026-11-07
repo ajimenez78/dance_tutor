@@ -3,12 +3,10 @@ import {
   completeLesson,
   dateKey,
   emptyProgress,
-  loadProgress,
   nextLesson,
   normalizeUrl,
   previousDay,
   sourceKind,
-  STORAGE_KEY,
   streak,
 } from "./model";
 
@@ -90,86 +88,6 @@ describe("learning path", () => {
   });
   it("suggests a repeat of the foundations after finishing the path", () => {
     expect(nextLesson(ids.salsa, ids.salsa)).toBe("salsa-rhythm");
-  });
-});
-
-describe("browser storage", () => {
-  it("persists independent stage choices and recovers invalid stages without losing progress", () => {
-    localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify({
-        ...emptyProgress,
-        completed: ["salsa-rhythm"],
-        stages: { salsa: "flow", bachata: "basics" },
-      }),
-    );
-    expect(loadProgress().stages).toEqual({ salsa: "flow", bachata: "basics" });
-    localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify({
-        ...emptyProgress,
-        completed: ["salsa-rhythm"],
-        stages: { salsa: "unknown", bachata: "flow" },
-      }),
-    );
-    expect(loadProgress().stages).toEqual({ salsa: "rhythm", bachata: "flow" });
-    expect(loadProgress().completed).toEqual(["salsa-rhythm"]);
-  });
-  it("starts empty and round-trips valid progress with sources", () => {
-    expect(loadProgress()).toEqual(emptyProgress);
-    const saved = {
-      style: "salsa",
-      completed: ["salsa-rhythm"],
-      activity: ["2026-10-29"],
-      sources: [
-        {
-          id: "1",
-          title: "My source",
-          url: "https://youtube.com/watch?v=123",
-          style: "salsa",
-          kind: "Video",
-        },
-      ],
-    };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
-    expect(loadProgress()).toEqual({ ...saved, stages: emptyProgress.stages });
-  });
-  it.each([
-    "broken json",
-    "null",
-    "{}",
-    '{"style":"tango"}',
-    '{"style":"salsa","completed":[3],"activity":[],"sources":[]}',
-    '{"style":"salsa","completed":[],"activity":[4],"sources":[]}',
-    '{"style":"salsa","completed":[],"activity":[],"sources":[null]}',
-  ])("recovers from malformed stored data: %s", (stored) => {
-    localStorage.setItem(STORAGE_KEY, stored);
-    expect(loadProgress()).toEqual(emptyProgress);
-  });
-  it("rejects unsafe source URLs restored from storage", () => {
-    localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify({
-        ...emptyProgress,
-        style: "salsa",
-        sources: [
-          {
-            id: "1",
-            title: "Bad",
-            style: "salsa",
-            kind: "Article",
-            url: "javascript:alert(1)",
-          },
-        ],
-      }),
-    );
-    expect(loadProgress()).toEqual(emptyProgress);
-  });
-  it("continues if storage is unavailable", () => {
-    vi.spyOn(Storage.prototype, "getItem").mockImplementation(() => {
-      throw new Error("Unavailable");
-    });
-    expect(loadProgress()).toEqual(emptyProgress);
   });
 });
 

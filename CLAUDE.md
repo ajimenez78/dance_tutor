@@ -30,7 +30,10 @@
 - `backend/`: TypeScript AWS Lambda functions, one per endpoint, on Serverless Framework v4 (HTTP API, nodejs24.x, eu-west-1, org `ajimenez`). No Docker or containers.
 - All lesson, tutorial, style and playlist content lives in `backend/src/content` and is served under `/api`. Amplify rewrites `/api/<*>` to the API Gateway endpoint.
 - Local development: `serverless offline` on 127.0.0.1:3000, with the Vite dev and preview servers proxying `/api` to it. Playwright starts both.
+- Learner progress (style, stages, completed lessons, practice days, sources) is stored in Aurora DSQL, keyed by an anonymous learner UUID kept in the browser. The cluster is its own Serverless service in `backend/database/` (`schema.sql`, `npm run db:migrate`); the API reads its endpoint from that stack and connects as `admin` with an IAM token.
+- Local development and `npm run test:db` use a personal DSQL cluster (stage `${STAGE:-$USER}`); there is no local database.
 - `frontend/` and `backend/` are independent npm projects; run checks in each.
+- Plans live in `plans/`, one file per feature.
 
 ## Strategy
 

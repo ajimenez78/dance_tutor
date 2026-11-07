@@ -22,8 +22,8 @@ export const spanish: Record<string, string> = {
   "Your pace, always": "Siempre a tu ritmo",
   "A little less scrolling. A little more dancing.":
     "Un poco menos de pantalla. Un poco más de baile.",
-  "No account needed. Your progress stays in this browser.":
-    "Sin cuenta. Tu progreso se guarda en este navegador.",
+  "No account needed. Your progress is saved automatically.":
+    "Sin cuenta. Tu progreso se guarda automáticamente.",
   "A LITTLE SPARK IN EVERY STEP": "UNA CHISPA EN CADA PASO",
   "MAKE ROOM FOR A LITTLE FLOW": "DÉJATE LLEVAR POR EL RITMO",
   step: "paso",
@@ -146,8 +146,8 @@ export const spanish: Record<string, string> = {
   Video: "Vídeo",
   Social: "Red social",
   Article: "Artículo",
-  "Your sources and progress are saved in this browser. No account, no feed. Just what helps you grow.":
-    "Tus recursos y tu progreso se guardan en este navegador. Sin cuenta ni distracciones. Solo lo que te ayuda a avanzar.",
+  "Your sources and progress are saved automatically. No account, no feed. Just what helps you grow.":
+    "Tus recursos y tu progreso se guardan automáticamente. Sin cuenta ni distracciones. Solo lo que te ayuda a avanzar.",
   "SAVE SOMETHING THAT MOVES YOU": "GUARDA ALGO QUE TE MUEVA",
   "Add a {style} source": "Añade un recurso de {style}",
   "Cancel adding source": "Cancelar recurso",

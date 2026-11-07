@@ -1,0 +1,22 @@
+org: ajimenez
+service: dance-tutor-data
+
+provider:
+  name: aws
+  region: ${opt:region, 'eu-west-1'}
+
+resources:
+  Resources:
+    Cluster:
+      Type: AWS::DSQL::Cluster
+      Properties:
+        DeletionProtectionEnabled: ${self:custom.deletionProtection.${sls:stage}, false}
+  Outputs:
+    ClusterEndpoint:
+      Value: !GetAtt Cluster.Endpoint
+    ClusterArn:
+      Value: !GetAtt Cluster.ResourceArn
+
+custom:
+  deletionProtection:
+    prod: true

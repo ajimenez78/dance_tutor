@@ -4,7 +4,7 @@ import {
   bachataPlaylistUrl,
   playlistVideoUrl,
 } from "./bachataPlaylist";
-import { getLessons, getPlaylist, getStyles } from "./index";
+import { getLessons, getPlaylist, getStyles, lessonIds } from "./index";
 import { lessons } from "./lessons";
 import { spanishLessons } from "./lessons.es";
 import { tutorials } from "./videos";
@@ -107,5 +107,16 @@ describe("content API", () => {
     expect(result.lessons[0].playlistLevel).toBe("initial");
     expect(result.lessons.at(-1)?.playlistLevel).toBe("intermediate");
     expect(result).not.toHaveProperty("videos");
+  });
+
+  it("lists every core and playlist lesson ID", () => {
+    for (const style of styles)
+      for (const language of languages)
+        for (const lesson of [
+          ...getLessons(style, language),
+          ...getPlaylist(style, language).lessons,
+        ])
+          expect(lessonIds.has(lesson.id)).toBe(true);
+    expect(lessonIds.has("unknown")).toBe(false);
   });
 });

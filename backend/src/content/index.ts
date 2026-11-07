@@ -36,3 +36,14 @@ export function getPlaylist(style: Style, language: Language) {
     lessons: playlistLessons(style, language),
   };
 }
+
+export const lessonIds = new Set(
+  (["salsa", "bachata"] as const).flatMap((style) =>
+    (["es", "en"] as const).flatMap((language) =>
+      [
+        ...getLessons(style, language),
+        ...getPlaylist(style, language).lessons,
+      ].map((lesson) => lesson.id),
+    ),
+  ),
+);
