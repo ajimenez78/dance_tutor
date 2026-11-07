@@ -1,17 +1,9 @@
-import type { APIGatewayProxyEventV2 } from "aws-lambda";
 import { lessonIds } from "../../content";
-import {
-  badLearner,
-  badRequest,
-  noContent,
-  parseBody,
-  parseLearner,
-} from "../../http";
+import { badRequest, noContent, parseBody } from "../../http";
+import { learnerHandler } from "../../learner";
 import { completeLesson } from "../../progress";
 
-export const handler = async (event: APIGatewayProxyEventV2) => {
-  const learner = parseLearner(event);
-  if (!learner) return badLearner();
+export const handler = learnerHandler(async (learner, event) => {
   const { lessonId, day } = parseBody(event);
   if (typeof lessonId !== "string" || !lessonIds.has(lessonId))
     return badRequest("Unknown lesson");
@@ -19,4 +11,4 @@ export const handler = async (event: APIGatewayProxyEventV2) => {
     return badRequest("day must be YYYY-MM-DD");
   await completeLesson(learner, lessonId, day);
   return noContent();
-};
+});

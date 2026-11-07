@@ -30,9 +30,9 @@ API:
 
 Checkpoints:
 
-- [ ] 1. Auth service: `dance-tutor-auth` defines the user pool, public app client and managed login domain; deployed to stage `arturo`; a test user can sign up, verify the email and sign in on the managed login page.
-- [ ] 2. Accounts schema and repository: `accounts` table added to `schema.sql` and migrated; repository functions to link and resolve an account; tests pass against the dev cluster.
-- [ ] 3. Protected API: JWT authorizer and `/api/me/*` routes; anonymous routes reject linked learners; handler unit tests pass; a curl round trip with a real dev-pool token works and without a token returns 401. Confirm how `serverless offline` handles the JWT authorizer and test the deployed dev stage where it differs.
+- [x] 1. Auth service: `dance-tutor-auth` defines the user pool, public app client and managed login domain; deployed to stage `arturo`; a test user can sign up, verify the email and sign in on the managed login page.
+- [x] 2. Accounts schema and repository: `accounts` table added to `schema.sql` and migrated; repository functions to link and resolve an account; tests pass against the dev cluster.
+- [x] 3. Protected API: JWT authorizer and `/api/me/*` routes; anonymous routes reject linked learners; handler unit tests pass; a curl round trip with a real dev-pool token works and without a token returns 401. `serverless offline` checks issuer, audience and expiry only with `ignoreJWTSignature` and a named authorizer (`authorizer: { name: account }`); API Gateway verifies the signature, tested on the deployed dev stage.
 - [ ] 4. Frontend sign-in: `react-oidc-context` with config from `/api/config`; sign in, sign up and sign out in the header in both languages; progress uses `/api/me` when signed in and links guest progress on first sign-in; unit tests pass.
 - [ ] 5. Federation: Google and Facebook providers configured with client secrets in SSM Parameter Store (SecureString), email attribute mapped; manual sign-in with each works on the dev stage.
 - [ ] 6. Browser tests: Playwright with a dev-pool test user (created with the admin API): guest progress is linked on first sign-in, progress appears in a second browser after sign-in, sign-out returns to guest mode; full suite passes.

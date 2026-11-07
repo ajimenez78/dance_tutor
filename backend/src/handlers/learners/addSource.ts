@@ -1,13 +1,11 @@
-import type { APIGatewayProxyEventV2 } from "aws-lambda";
 import {
-  badLearner,
   badRequest,
   isStyle,
   isUuid,
   noContent,
   parseBody,
-  parseLearner,
 } from "../../http";
+import { learnerHandler } from "../../learner";
 import { addSource, type Source } from "../../progress";
 
 const kinds: unknown[] = ["Video", "Social", "Article"] satisfies Source["kind"][];
@@ -32,12 +30,10 @@ function isSource(value: Record<string, unknown>): boolean {
   );
 }
 
-export const handler = async (event: APIGatewayProxyEventV2) => {
-  const learner = parseLearner(event);
-  if (!learner) return badLearner();
+export const handler = learnerHandler(async (learner, event) => {
   const body = parseBody(event);
   if (!isSource(body)) return badRequest("Invalid source");
   const { id, title, url, style, kind } = body as Source;
   await addSource(learner, { id, title, url, style, kind });
   return noContent();
-};
+});
