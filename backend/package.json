@@ -8,6 +8,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run --exclude \"**/*.db.test.ts\"",
     "deploy": "serverless deploy",
+    "auth:deploy": "cd auth && serverless deploy --stage ${STAGE:-$USER}",
     "db:deploy": "cd database && serverless deploy --stage ${STAGE:-$USER}",
     "db:endpoint": "aws cloudformation describe-stacks --region eu-west-1 --stack-name dance-tutor-data-${STAGE:-$USER} --query \"Stacks[0].Outputs[?OutputKey==\\`ClusterEndpoint\\`].OutputValue\" --output text",
     "db:migrate": "AWS_REGION=eu-west-1 DSQL_ENDPOINT=$(npm run -s db:endpoint) node database/migrate.ts",
