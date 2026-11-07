@@ -27,19 +27,17 @@ import type { Styles } from "./content";
 import VideoTutorial from "./VideoTutorial";
 import type { Lesson, PlaylistLevel, Style } from "./types";
 import {
-  completeLesson,
   dateKey,
-  loadProgress,
   nextLesson,
   normalizeUrl,
   previousDay,
   sourceKind,
-  STORAGE_KEY,
   streak,
   stageStart,
 } from "./model";
 import type { Progress, Source, StartingStage } from "./model";
 import Practice from "./Practice";
+import { useProgress } from "./progress";
 
 type Tab = "Today" | "Learning path" | "My library";
 const playlistLevels: PlaylistLevel[] = [
@@ -227,7 +225,7 @@ function Onboarding({
       <footer className="onboarding-footer">
         {t("A little less scrolling. A little more dancing.")}
         <span>
-          {t("No account needed. Your progress stays in this browser.")}
+          {t("No account needed. Your progress is saved automatically.")}
         </span>
       </footer>
     </div>
@@ -814,11 +812,13 @@ function SourceForm({
 function MyLibrary({
   style,
   progress,
-  onChange,
+  onAdd,
+  onRemove,
 }: {
   style: Style;
   progress: Progress;
-  onChange: (updater: (value: Progress) => Progress) => void;
+  onAdd: (source: Source) => void;
+  onRemove: (id: string) => void;
 }) {
   const { t } = useLanguage();
   const { styles } = useContent();
@@ -859,10 +859,7 @@ function MyLibrary({
           style={style}
           onClose={() => setAdding(false)}
           onAdd={(source) => {
-            onChange((value) => ({
-              ...value,
-              sources: [...value.sources, source],
-            }));
+            onAdd(source);
             setAdding(false);
             setNotice({ message: "Source saved." });
           }}
@@ -908,12 +905,7 @@ function MyLibrary({
                   className="icon-button"
                   aria-label={t("Remove {title}", { title: source.title })}
                   onClick={() => {
-                    onChange((value) => ({
-                      ...value,
-                      sources: value.sources.filter(
-                        (item) => item.id !== source.id,
-                      ),
-                    }));
+                    onRemove(source.id);
                     setNotice({
                       message: "{title} removed.",
                       title: source.title,
@@ -943,7 +935,7 @@ function MyLibrary({
         <Leaf size={18} />
         <p>
           {t(
-            "Your sources and progress are saved in this browser. No account, no feed. Just what helps you grow.",
+            "Your sources and progress are saved automatically. No account, no feed. Just what helps you grow.",
           )}
         </p>
       </div>
@@ -1191,27 +1183,14 @@ function ContentStatus({ onRetry }: { onRetry?: () => void }) {
 
 function DanceTutor() {
   const { t } = useLanguage();
-  const [progress, setProgress] = useState(loadProgress);
-  const loader = useContentLoader(progress.style);
+  const learner = useProgress();
+  const { progress } = learner;
+  const loader = useContentLoader(progress?.style ?? null);
   const [tab, setTab] = useState<Tab>("Today");
   const [lesson, setLesson] = useState<Lesson | null>(null);
-  const [saveError, setSaveError] = useState(false);
-  useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
-      setSaveError(false);
-    } catch {
-      setSaveError(true);
-    }
-  }, [progress]);
+  const saveError = !learner.remembered;
   function selectStyle(style: Style, startingStage?: StartingStage) {
-    setProgress((value) => ({
-      ...value,
-      style,
-      stages: startingStage
-        ? { ...value.stages, [style]: startingStage }
-        : value.stages,
-    }));
+    learner.selectStyle(style, startingStage);
     setLesson(null);
     setTab("Today");
   }
@@ -1225,7 +1204,16 @@ function DanceTutor() {
     window.scrollTo({ top: 0 });
   }
 
-  if (loader.failed) return <ContentStatus onRetry={loader.retry} />;
+  if (loader.failed || learner.failed)
+    return (
+      <ContentStatus
+        onRetry={() => {
+          if (loader.failed) loader.retry();
+          if (learner.failed) learner.retry();
+        }}
+      />
+    );
+  if (!progress) return <ContentStatus />;
   if (!progress.style) {
     if (!loader.styles) return <ContentStatus />;
     return (
@@ -1342,9 +1330,7 @@ function DanceTutor() {
                 }
                 style={style}
                 onClose={() => setLesson(null)}
-                onComplete={() =>
-                  setProgress((value) => completeLesson(value, lesson.id))
-                }
+                onComplete={() => learner.complete(lesson.id)}
               />
             ) : tab === "Today" ? (
               <Today
@@ -1358,19 +1344,15 @@ function DanceTutor() {
                 style={style}
                 progress={progress}
                 onOpen={openLesson}
-                onStageChange={(stage) =>
-                  setProgress((value) => ({
-                    ...value,
-                    stages: { ...value.stages, [style]: stage },
-                  }))
-                }
+                onStageChange={(stage) => learner.setStage(style, stage)}
               />
             ) : (
               <MyLibrary
                 key={style}
                 style={style}
                 progress={progress}
-                onChange={setProgress}
+                onAdd={learner.addSource}
+                onRemove={learner.removeSource}
               />
             )}
           </main>

@@ -4,16 +4,25 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "dev": "serverless offline",
+    "dev": "serverless offline --stage ${STAGE:-$USER}",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run",
-    "deploy": "serverless deploy"
+    "test": "vitest run --exclude \"**/*.db.test.ts\"",
+    "deploy": "serverless deploy",
+    "db:deploy": "cd database && serverless deploy --stage ${STAGE:-$USER}",
+    "db:endpoint": "aws cloudformation describe-stacks --region eu-west-1 --stack-name dance-tutor-data-${STAGE:-$USER} --query \"Stacks[0].Outputs[?OutputKey==\\`ClusterEndpoint\\`].OutputValue\" --output text",
+    "db:migrate": "AWS_REGION=eu-west-1 DSQL_ENDPOINT=$(npm run -s db:endpoint) node database/migrate.ts",
+    "test:db": "AWS_REGION=eu-west-1 DSQL_ENDPOINT=$(npm run -s db:endpoint) vitest run db.test"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.164",
     "@types/node": "^26.6.6",
+    "@types/pg": "^8.23.1",
     "serverless-offline": "^14.8.4",
     "typescript": "^7.0.2",
     "vitest": "^5.1.0"
+  },
+  "dependencies": {
+    "@aws-sdk/dsql-signer": "^3.1164.0",
+    "pg": "^8.23.1"
   }
 }

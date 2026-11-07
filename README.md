@@ -1,9 +1,10 @@
 # Ritmo
 
-A small dance tutor for Salsa and Bachata. Spanish by default, with an English language selector. No account needed; progress stays in this browser.
+A small dance tutor for Salsa and Bachata. Spanish by default, with an English language selector. No account needed; progress is saved to the API under an anonymous browser ID.
 
 - `frontend/`: React, TypeScript and Vite, hosted on AWS Amplify.
-- `backend/`: read-only content API as TypeScript AWS Lambda functions, deployed with Serverless Framework v4.
+- `backend/`: content and progress API as TypeScript AWS Lambda functions, deployed with Serverless Framework v4.
+- `backend/database/`: the Aurora DSQL cluster (PostgreSQL-compatible) that stores learner progress, as its own Serverless service.
 
 **Live app:** [Try Ritmo](https://main.d3k2uxz8qd3ag0.amplifyapp.com/) — hosted on AWS Amplify.
 
@@ -18,19 +19,28 @@ Choose rhythm, basic steps or combinations as your starting stage, independently
 
 ## API
 
-All endpoints accept `lang=es|en` (default `es`).
+Content endpoints accept `lang=es|en` (default `es`).
 
 - `GET /api/health`
 - `GET /api/styles`
 - `GET /api/styles/{style}/lessons`: core lessons with their tutorial
 - `GET /api/styles/{style}/playlist`: playlist details and its lessons by level
 
+Progress endpoints take the learner's UUID:
+
+- `GET /api/learners/{id}/progress`
+- `PUT /api/learners/{id}/style`, `PUT /api/learners/{id}/stages/{style}`
+- `POST /api/learners/{id}/completions` (`lessonId`, local `day`)
+- `POST /api/learners/{id}/sources`, `DELETE /api/learners/{id}/sources/{sourceId}`
+
 ## Run locally
 
-Use Node 24 or 26 and npm. The Serverless CLI (`npm i -g serverless`) needs a `serverless login`, even offline.
+Use Node 24 or 26 and npm. The Serverless CLI (`npm i -g serverless`) needs a `serverless login`, even offline. Progress uses a personal DSQL cluster in AWS (stage `${STAGE:-$USER}`), so AWS credentials are needed.
 
 ```sh
-cd backend && npm ci && npm run dev     # API on http://127.0.0.1:3000
+cd backend && npm ci
+npm run db:deploy && npm run db:migrate # once: personal cluster and schema
+npm run dev                             # API on http://127.0.0.1:3000
 cd frontend && npm ci && npm run dev    # app on http://localhost:5173, proxies /api
 ```
 
@@ -47,7 +57,7 @@ Guided Bachata practice on mobile:
 ## Checks
 
 ```sh
-cd backend && npm run typecheck && npm test
+cd backend && npm run typecheck && npm test && npm run test:db
 cd frontend && npm run test:coverage && npm run build && npm run test:e2e
 ```
 
@@ -59,9 +69,10 @@ The practice count is visual. Tutorials follow your selected language: Spanish-s
 
 ## Deploy
 
-1. API: `cd backend && npm run deploy -- --stage prod` (needs AWS credentials). Note the HTTP API URL it prints.
-2. Amplify: the build uses `amplify.yml` with `appRoot: frontend`, so no extra environment variable is needed. In Rewrites and redirects, add `/api/<*>` to `https://<api-id>.execute-api.<region>.amazonaws.com/api/<*>` as a `200 (Rewrite)`, above the SPA fallback rule.
+1. Database: `cd backend && STAGE=prod npm run db:deploy && STAGE=prod npm run db:migrate` (needs AWS credentials). The prod cluster has deletion protection.
+1. API: `npm run deploy -- --stage prod`. It reads the cluster endpoint from the data stack. Note the HTTP API URL it prints.
+1. Amplify: the build uses `amplify.yml` with `appRoot: frontend`, so no extra environment variable is needed. In Rewrites and redirects, add `/api/<*>` to `https://<api-id>.execute-api.<region>.amazonaws.com/api/<*>` as a `200 (Rewrite)`, above the SPA fallback rule.
 
 ## Data
 
-Clearing browser data removes saved progress, preferences and links. Data is local to the browser and does not sync between devices.
+Progress, completed lessons, practice days and saved links are stored in Aurora DSQL under an anonymous learner ID kept in the browser. Clearing browser data loses that ID, and with it access to the saved progress; the language preference stays in the browser. Progress does not sync between devices yet.

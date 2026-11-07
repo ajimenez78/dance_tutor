@@ -8,6 +8,22 @@ provider:
   region: ${opt:region, 'eu-west-1'}
   memorySize: 256
   timeout: 10
+  environment:
+    DSQL_ENDPOINT: ${cf:dance-tutor-data-${sls:stage}.ClusterEndpoint}
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action: dsql:DbConnectAdmin
+          Resource: ${cf:dance-tutor-data-${sls:stage}.ClusterArn}
+
+build:
+  esbuild:
+    external:
+      - pg
+    exclude:
+      - "@aws-sdk/*"
+      - "!@aws-sdk/dsql-signer"
 
 plugins:
   - serverless-offline
@@ -34,3 +50,27 @@ functions:
     handler: src/handlers/playlist.handler
     events:
       - httpApi: GET /api/styles/{style}/playlist
+  progress:
+    handler: src/handlers/learners/progress.handler
+    events:
+      - httpApi: GET /api/learners/{learner}/progress
+  style:
+    handler: src/handlers/learners/style.handler
+    events:
+      - httpApi: PUT /api/learners/{learner}/style
+  stage:
+    handler: src/handlers/learners/stage.handler
+    events:
+      - httpApi: PUT /api/learners/{learner}/stages/{style}
+  completions:
+    handler: src/handlers/learners/completions.handler
+    events:
+      - httpApi: POST /api/learners/{learner}/completions
+  addSource:
+    handler: src/handlers/learners/addSource.handler
+    events:
+      - httpApi: POST /api/learners/{learner}/sources
+  removeSource:
+    handler: src/handlers/learners/removeSource.handler
+    events:
+      - httpApi: DELETE /api/learners/{learner}/sources/{source}
