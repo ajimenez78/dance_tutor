@@ -12,15 +12,11 @@ const source = {
   kind: "Video" as const,
 };
 
-function mockApi(failing?: string, accountLearner?: string) {
+function mockApi(failing?: string) {
   const fetch = vi.fn(async (path: string, init?: RequestInit) => {
     if (failing && init?.method === failing)
       return new Response(null, { status: 500 });
     if (path.endsWith("/progress")) return Response.json(emptyProgress);
-    if (path === "/api/me/link")
-      return Response.json({
-        learnerId: accountLearner ?? JSON.parse(String(init?.body)).learnerId,
-      });
     return new Response(null, { status: 204 });
   });
   vi.stubGlobal("fetch", fetch);
@@ -132,13 +128,5 @@ describe("learner progress", () => {
       learnerId: guest,
     });
     expect(localStorage.getItem(LEARNER_KEY)).not.toBe(guest);
-  });
-
-  it("keeps the guest when the account already has progress", async () => {
-    mockApi(undefined, "0b9d8c7e-0000-4b3c-9d2e-1f0a9b8c7d6e");
-    await render();
-    const guest = localStorage.getItem(LEARNER_KEY);
-    await render({ sub: "user-1", token: "token-1" });
-    expect(localStorage.getItem(LEARNER_KEY)).toBe(guest);
   });
 });

@@ -5,6 +5,6 @@ import { badLearner, isUuid, json, parseBody } from "../http";
 export const handler = async (event: APIGatewayProxyEventV2WithJWTAuthorizer) => {
   const { learnerId } = parseBody(event);
   if (!isUuid(learnerId)) return badLearner();
-  const sub = String(event.requestContext.authorizer.jwt.claims.sub);
+  const sub = event.requestContext.authorizer.jwt.claims.sub as string;
   return json(200, { learnerId: await linkAccount(sub, learnerId) });
 };

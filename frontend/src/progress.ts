@@ -19,8 +19,8 @@ function loadLearner(): { id: string; remembered: boolean } {
   }
 }
 
-// After sign-in links this guest to the account, the browser starts a new
-// guest for when the learner signs out.
+// Once signed in, the browser starts a new guest for when the learner signs
+// out: the old guest is now the account's, or no longer needed.
 function renewGuest() {
   try {
     localStorage.setItem(LEARNER_KEY, crypto.randomUUID());
@@ -51,9 +51,8 @@ async function send(
 }
 
 async function linkGuest(guestId: string, token: string) {
-  const response = await send("/api/me/link", "POST", { learnerId: guestId }, token);
-  const { learnerId } = await response.json();
-  if (learnerId === guestId) renewGuest();
+  await send("/api/me/link", "POST", { learnerId: guestId }, token);
+  renewGuest();
 }
 
 export function useProgress(account: Account | null = null) {
