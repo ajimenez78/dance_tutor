@@ -19,29 +19,61 @@ function loadLearner(): { id: string; remembered: boolean } {
   }
 }
 
-async function send(path: string, method: string, body?: unknown) {
+// After sign-in links this guest to the account, the browser starts a new
+// guest for when the learner signs out.
+function renewGuest() {
+  try {
+    localStorage.setItem(LEARNER_KEY, crypto.randomUUID());
+  } catch {
+    /* Without browser storage the next visit starts a new guest anyway. */
+  }
+}
+
+export type Account = { sub: string; token: string };
+
+async function send(
+  path: string,
+  method: string,
+  body?: unknown,
+  token?: string,
+) {
+  const headers: Record<string, string> = {};
+  if (body) headers["content-type"] = "application/json";
+  if (token) headers.authorization = `Bearer ${token}`;
   const response = await fetch(path, {
     method,
     keepalive: true,
-    headers: body ? { "content-type": "application/json" } : undefined,
+    headers,
     body: body ? JSON.stringify(body) : undefined,
   });
   if (!response.ok) throw new Error(`${method} ${path}: ${response.status}`);
   return response;
 }
 
-export function useProgress() {
+async function linkGuest(guestId: string, token: string) {
+  const response = await send("/api/me/link", "POST", { learnerId: guestId }, token);
+  const { learnerId } = await response.json();
+  if (learnerId === guestId) renewGuest();
+}
+
+export function useProgress(account: Account | null = null) {
   const [learner] = useState(loadLearner);
   const [progress, setProgress] = useState<Progress | null>(null);
   const [failed, setFailed] = useState(false);
   const [attempt, setAttempt] = useState(0);
   const queue = useRef<Promise<unknown>>(Promise.resolve());
-  const base = `/api/learners/${learner.id}`;
+  // Token renewals must not reload progress, so requests read the latest one.
+  const token = useRef(account?.token);
+  token.current = account?.token;
+  const sub = account?.sub;
+  const base = sub ? "/api/me" : `/api/learners/${learner.id}`;
 
   useEffect(() => {
     let current = true;
     setFailed(false);
-    send(`${base}/progress`, "GET")
+    const linked = sub ? linkGuest(learner.id, token.current!) : Promise.resolve();
+    linked
+      .then(() => send(`${base}/progress`, "GET", undefined, token.current))
       .then((response) => response.json())
       .then(
         (value: Progress) => current && setProgress(value),
@@ -50,7 +82,7 @@ export function useProgress() {
     return () => {
       current = false;
     };
-  }, [base, attempt]);
+  }, [base, sub, learner.id, attempt]);
 
   function save(
     update: (value: Progress) => Progress,
@@ -60,7 +92,7 @@ export function useProgress() {
     // Saves run one at a time, in the order the learner made them.
     for (const [path, method, body] of requests)
       queue.current = queue.current.then(() =>
-        send(`${base}${path}`, method, body),
+        send(`${base}${path}`, method, body, token.current),
       );
     queue.current = queue.current.catch(() => setFailed(true));
   }

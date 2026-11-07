@@ -38,6 +38,9 @@ import {
 import type { Progress, Source, StartingStage } from "./model";
 import Practice from "./Practice";
 import { useProgress } from "./progress";
+import type { Account } from "./progress";
+import { AccountButton, SignInProvider, useAuthConfig } from "./auth";
+import { useAuth } from "react-oidc-context";
 
 type Tab = "Today" | "Learning path" | "My library";
 const playlistLevels: PlaylistLevel[] = [
@@ -158,7 +161,10 @@ function Onboarding({
     <div className="onboarding">
       <header className="onboarding-header">
         <Brand />
-        <LanguagePicker />
+        <div className="header-controls">
+          <AccountButton />
+          <LanguagePicker />
+        </div>
       </header>
       <main className="onboarding-main">
         <span className="eyebrow">
@@ -1181,9 +1187,9 @@ function ContentStatus({ onRetry }: { onRetry?: () => void }) {
   );
 }
 
-function DanceTutor() {
+function DanceTutor({ account }: { account: Account | null }) {
   const { t } = useLanguage();
-  const learner = useProgress();
+  const learner = useProgress(account);
   const { progress } = learner;
   const loader = useContentLoader(progress?.style ?? null);
   const [tab, setTab] = useState<Tab>("Today");
@@ -1293,7 +1299,9 @@ function DanceTutor() {
             </div>
             <div className="local-note">
               <span className="tiny-dot" />
-              {t("Just you. No account needed.")}
+              {account
+                ? t("Your progress follows your account.")
+                : t("Just you. No account needed.")}
             </div>
           </div>
         </aside>
@@ -1309,6 +1317,7 @@ function DanceTutor() {
                 <span className="tiny-dot" />
                 {t("ONE STEP AT A TIME")}
               </span>
+              <AccountButton />
               <LanguagePicker />
             </div>
           </header>
@@ -1366,10 +1375,32 @@ function DanceTutor() {
   );
 }
 
+// Progress waits for the sign-in state, so a signed-in learner never loads
+// guest progress first.
+function SignedInTutor() {
+  const auth = useAuth();
+  if (auth.isLoading) return <ContentStatus />;
+  const account = auth.user
+    ? { sub: auth.user.profile.sub, token: auth.user.access_token }
+    : null;
+  return <DanceTutor key={account?.sub} account={account} />;
+}
+
+function Root() {
+  const auth = useAuthConfig();
+  if (auth.failed) return <ContentStatus onRetry={auth.retry} />;
+  if (!auth.config) return <ContentStatus />;
+  return (
+    <SignInProvider config={auth.config}>
+      <SignedInTutor />
+    </SignInProvider>
+  );
+}
+
 export default function App() {
   return (
     <LanguageProvider>
-      <DanceTutor />
+      <Root />
     </LanguageProvider>
   );
 }

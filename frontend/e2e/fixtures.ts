@@ -23,9 +23,13 @@ export const test = base.extend({
 
 export { expect };
 
-export async function reloadWhenSaved(page: Page) {
+export async function waitForSaves(page: Page) {
   await page.waitForFunction(
     () => (window as unknown as Counted).pendingSaves === 0,
   );
+}
+
+export async function reloadWhenSaved(page: Page) {
+  await waitForSaves(page);
   await page.reload();
 }
