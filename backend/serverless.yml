@@ -1,0 +1,36 @@
+org: ajimenez
+service: dance-tutor-api
+
+provider:
+  name: aws
+  runtime: nodejs24.x
+  architecture: arm64
+  region: ${opt:region, 'eu-west-1'}
+  memorySize: 256
+  timeout: 10
+
+plugins:
+  - serverless-offline
+
+custom:
+  serverless-offline:
+    host: 127.0.0.1
+    httpPort: 3000
+
+functions:
+  health:
+    handler: src/handlers/health.handler
+    events:
+      - httpApi: GET /api/health
+  styles:
+    handler: src/handlers/styles.handler
+    events:
+      - httpApi: GET /api/styles
+  lessons:
+    handler: src/handlers/lessons.handler
+    events:
+      - httpApi: GET /api/styles/{style}/lessons
+  playlist:
+    handler: src/handlers/playlist.handler
+    events:
+      - httpApi: GET /api/styles/{style}/playlist

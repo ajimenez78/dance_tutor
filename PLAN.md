@@ -1,5 +1,16 @@
 # Dance tutor MVP plan
 
+## Backend/frontend split (Trello card #1, OLjAH2Ft)
+
+- [x] Move the React app to `frontend/`; unit tests and build pass from there.
+- [x] Move all content to `backend/` and serve it from four TypeScript Lambda handlers (health, styles, lessons, playlist), `lang=es|en`, default `es`.
+- [x] Define the service in Serverless Framework v4 (`nodejs24.x`, HTTP API) and run it locally with `serverless offline`.
+- [x] Frontend loads content from `/api` with a loading state, a translated error with retry, an in-memory cache, and no reset of open lessons on language change.
+- [x] Backend unit tests, frontend unit tests with coverage, and the full Playwright suite against the local API pass.
+- [x] Add `amplify.yml` (monorepo `appRoot: frontend`) and document deploy and the `/api` rewrite in the README.
+- [x] Deploy the API (`prod`, eu-west-1) and add the Amplify `/api/<*>` rewrite; verified through the live domain.
+- [ ] On merge to `main`: set `AMPLIFY_MONOREPO_APP_ROOT=frontend` in Amplify and verify the live app.
+
 ## Tutorial language matching
 
 - [x] Find and verify Spanish-speaking tutors whose demonstrations match the Salsa On1 and Bachata lessons.
