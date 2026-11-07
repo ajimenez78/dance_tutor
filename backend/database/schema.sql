@@ -35,3 +35,9 @@ CREATE TABLE IF NOT EXISTS sources (
 );
 
 CREATE INDEX ASYNC IF NOT EXISTS sources_by_learner ON sources (learner_id);
+
+CREATE TABLE IF NOT EXISTS accounts (
+  sub text PRIMARY KEY,
+  learner_id uuid NOT NULL UNIQUE,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
