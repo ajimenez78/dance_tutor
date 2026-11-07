@@ -40,4 +40,4 @@ Checkpoints:
 - [x] 6. Browser tests: Playwright against `serverless offline` and the dev cluster; completing a lesson survives a reload, a new browser context starts empty; full suite passes.
 - [x] 7. Deploy: data service and API to `prod`, schema applied, progress round trip verified through the Amplify domain (warm requests 0.1-0.2 s).
 - [x] 8. Docs and PR: README, CLAUDE.md architecture and this plan updated; PR opened.
-- [ ] 9. After merge: the Amplify build serves the new frontend and the live app keeps progress across a reload.
+- [x] 9. After merge: the Amplify build (job 8) serves the new frontend and the live app keeps progress across a reload; a new browser starts fresh.

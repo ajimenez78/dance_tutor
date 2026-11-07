@@ -35,6 +35,15 @@
 - `frontend/` and `backend/` are independent npm projects; run checks in each.
 - Plans live in `plans/`, one file per feature.
 
+## Development notes
+
+- AWS access uses the SSO profile `AdministratorAccess-891377214100`: prefix commands with `AWS_PROFILE=...`; when the token expires, run `aws sso login --profile AdministratorAccess-891377214100`.
+- Deploy order per stage: `npm run db:deploy` and `db:migrate` before the API, since the API resolves the cluster endpoint and ARN from the `dance-tutor-data-<stage>` stack.
+- Keep `pg` under `build.esbuild.external` in `backend/serverless.yml`: it is CommonJS and fails inside the ESM bundle ("Dynamic require of events").
+- The frontend applies progress changes at once and sends saves one at a time, in order (`frontend/src/progress.ts`). In Playwright, use `reloadWhenSaved` from `e2e/fixtures.ts` instead of `page.reload()`.
+- Restart long-running dev servers after config changes; check `/api` responses through port 5173 return JSON, not `index.html`.
+- The GitHub repo belongs to `ajimenez78`; for `gh` actions use `GH_TOKEN=$(gh auth token --user ajimenez78) gh ...`.
+
 ## Strategy
 
 1. Write plan with success criteria for each phase to be checked off. Include project scaffolding, including .gitignore, and rigorous unit testing.
