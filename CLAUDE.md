@@ -24,6 +24,14 @@
 - Try the videos match the selected language, if possible
 - Prefer Spanish speaking tutors.
 
+## Architecture
+
+- `frontend/`: React app (Vite), hosted on AWS Amplify. The build uses `amplify.yml` with `appRoot: frontend`.
+- `backend/`: TypeScript AWS Lambda functions, one per endpoint, on Serverless Framework v4 (HTTP API, nodejs24.x, eu-west-1, org `ajimenez`). No Docker or containers.
+- All lesson, tutorial, style and playlist content lives in `backend/src/content` and is served under `/api`. Amplify rewrites `/api/<*>` to the API Gateway endpoint.
+- Local development: `serverless offline` on 127.0.0.1:3000, with the Vite dev and preview servers proxying `/api` to it. Playwright starts both.
+- `frontend/` and `backend/` are independent npm projects; run checks in each.
+
 ## Strategy
 
 1. Write plan with success criteria for each phase to be checked off. Include project scaffolding, including .gitignore, and rigorous unit testing.

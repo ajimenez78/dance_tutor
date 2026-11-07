@@ -60,7 +60,7 @@ The practice count is visual. Tutorials follow your selected language: Spanish-s
 ## Deploy
 
 1. API: `cd backend && npm run deploy -- --stage prod` (needs AWS credentials). Note the HTTP API URL it prints.
-2. Amplify: the build uses `amplify.yml` with `appRoot: frontend`; set the app's `AMPLIFY_MONOREPO_APP_ROOT` environment variable to `frontend`. In Rewrites and redirects, add `/api/<*>` to `https://<api-id>.execute-api.<region>.amazonaws.com/api/<*>` as a `200 (Rewrite)`, above the SPA fallback rule.
+2. Amplify: the build uses `amplify.yml` with `appRoot: frontend`, so no extra environment variable is needed. In Rewrites and redirects, add `/api/<*>` to `https://<api-id>.execute-api.<region>.amazonaws.com/api/<*>` as a `200 (Rewrite)`, above the SPA fallback rule.
 
 ## Data
 

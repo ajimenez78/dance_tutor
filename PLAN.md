@@ -9,7 +9,7 @@
 - [x] Backend unit tests, frontend unit tests with coverage, and the full Playwright suite against the local API pass.
 - [x] Add `amplify.yml` (monorepo `appRoot: frontend`) and document deploy and the `/api` rewrite in the README.
 - [x] Deploy the API (`prod`, eu-west-1) and add the Amplify `/api/<*>` rewrite; verified through the live domain.
-- [ ] On merge to `main`: set `AMPLIFY_MONOREPO_APP_ROOT=frontend` in Amplify and verify the live app.
+- [x] Merged to `main`; the Amplify build uses `appRoot: frontend` from `amplify.yml` (no extra environment variable needed) and the live app loads content from the API.
 
 ## Tutorial language matching
 
