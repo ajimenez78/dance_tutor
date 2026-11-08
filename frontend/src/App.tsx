@@ -1367,7 +1367,10 @@ function DanceTutor({ account }: { account: Account | null }) {
           </main>
           <footer className="app-footer">
             <span>{t("Small steps. Every day.")}</span>
-            <span>{t("Made for the joy of moving.")}</span>
+            <span>
+              {t("Made for the joy of moving.")} ·{" "}
+              <a href="/privacy.html">{t("Privacy")}</a>
+            </span>
           </footer>
         </div>
       </div>

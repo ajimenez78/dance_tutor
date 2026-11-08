@@ -212,6 +212,7 @@ export const spanish: Record<string, string> = {
   "Your progress follows your account.": "Tu progreso va contigo en tu cuenta.",
   "Sign in": "Iniciar sesión",
   "Sign out": "Cerrar sesión",
+  Privacy: "Privacidad",
   "Your space to move": "Tu espacio para moverte",
   "A little lesson": "Una pequeña lección",
   "ONE STEP AT A TIME": "UN PASO CADA DÍA",

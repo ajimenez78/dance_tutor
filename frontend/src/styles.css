@@ -1071,6 +1071,9 @@ p {
   color: #626f55;
   letter-spacing: 0.3px;
 }
+.app-footer a {
+  color: inherit;
+}
 /* Learning path and library */
 .path-page-grid {
   display: grid;
