@@ -1,0 +1,75 @@
+org: ajimenez
+service: dance-tutor-auth
+
+provider:
+  name: aws
+  region: ${opt:region, 'eu-west-1'}
+
+custom:
+  appUrls:
+    prod:
+      - https://main.d3k2uxz8qd3ag0.amplifyapp.com
+    default:
+      - http://localhost:5173
+      - http://localhost:4173
+  urls: ${self:custom.appUrls.${sls:stage}, self:custom.appUrls.default}
+  deletionProtection:
+    prod: ACTIVE
+
+resources:
+  Resources:
+    UserPool:
+      Type: AWS::Cognito::UserPool
+      Properties:
+        UserPoolName: dance-tutor-${sls:stage}
+        UserPoolTier: ESSENTIALS
+        DeletionProtection: ${self:custom.deletionProtection.${sls:stage}, 'INACTIVE'}
+        UsernameAttributes:
+          - email
+        AutoVerifiedAttributes:
+          - email
+        AccountRecoverySetting:
+          RecoveryMechanisms:
+            - Name: verified_email
+              Priority: 1
+    AppClient:
+      Type: AWS::Cognito::UserPoolClient
+      Properties:
+        UserPoolId: !Ref UserPool
+        ClientName: web
+        GenerateSecret: false
+        AllowedOAuthFlowsUserPoolClient: true
+        AllowedOAuthFlows:
+          - code
+        AllowedOAuthScopes:
+          - openid
+          - email
+        SupportedIdentityProviders:
+          - COGNITO
+        CallbackURLs: ${self:custom.urls}
+        LogoutURLs: ${self:custom.urls}
+        ExplicitAuthFlows:
+          - ALLOW_USER_PASSWORD_AUTH
+          - ALLOW_REFRESH_TOKEN_AUTH
+    Domain:
+      Type: AWS::Cognito::UserPoolDomain
+      Properties:
+        UserPoolId: !Ref UserPool
+        Domain: ritmo-dance-tutor-${sls:stage}
+        ManagedLoginVersion: 2
+    Branding:
+      Type: AWS::Cognito::ManagedLoginBranding
+      DependsOn: Domain
+      Properties:
+        UserPoolId: !Ref UserPool
+        ClientId: !Ref AppClient
+        UseCognitoProvidedValues: true
+  Outputs:
+    Issuer:
+      Value: !Sub https://cognito-idp.${AWS::Region}.amazonaws.com/${UserPool}
+    UserPoolId:
+      Value: !Ref UserPool
+    ClientId:
+      Value: !Ref AppClient
+    LoginDomain:
+      Value: !Sub ${Domain}.auth.${AWS::Region}.amazoncognito.com

@@ -10,6 +10,17 @@ provider:
   timeout: 10
   environment:
     DSQL_ENDPOINT: ${cf:dance-tutor-data-${sls:stage}.ClusterEndpoint}
+    AUTH_ISSUER: ${cf:dance-tutor-auth-${sls:stage}.Issuer}
+    AUTH_DOMAIN: ${cf:dance-tutor-auth-${sls:stage}.LoginDomain}
+    AUTH_CLIENT_ID: ${cf:dance-tutor-auth-${sls:stage}.ClientId}
+  httpApi:
+    authorizers:
+      account:
+        type: jwt
+        identitySource: $request.header.Authorization
+        issuerUrl: ${cf:dance-tutor-auth-${sls:stage}.Issuer}
+        audience:
+          - ${cf:dance-tutor-auth-${sls:stage}.ClientId}
   iam:
     role:
       statements:
@@ -32,12 +43,25 @@ custom:
   serverless-offline:
     host: 127.0.0.1
     httpPort: 3000
+    ignoreJWTSignature: true
 
 functions:
   health:
     handler: src/handlers/health.handler
     events:
       - httpApi: GET /api/health
+  config:
+    handler: src/handlers/config.handler
+    events:
+      - httpApi: GET /api/config
+  link:
+    handler: src/handlers/link.handler
+    events:
+      - httpApi:
+          path: /api/me/link
+          method: POST
+          authorizer:
+            name: account
   styles:
     handler: src/handlers/styles.handler
     events:
@@ -54,23 +78,53 @@ functions:
     handler: src/handlers/learners/progress.handler
     events:
       - httpApi: GET /api/learners/{learner}/progress
+      - httpApi:
+          path: /api/me/progress
+          method: GET
+          authorizer:
+            name: account
   style:
     handler: src/handlers/learners/style.handler
     events:
       - httpApi: PUT /api/learners/{learner}/style
+      - httpApi:
+          path: /api/me/style
+          method: PUT
+          authorizer:
+            name: account
   stage:
     handler: src/handlers/learners/stage.handler
     events:
       - httpApi: PUT /api/learners/{learner}/stages/{style}
+      - httpApi:
+          path: /api/me/stages/{style}
+          method: PUT
+          authorizer:
+            name: account
   completions:
     handler: src/handlers/learners/completions.handler
     events:
       - httpApi: POST /api/learners/{learner}/completions
+      - httpApi:
+          path: /api/me/completions
+          method: POST
+          authorizer:
+            name: account
   addSource:
     handler: src/handlers/learners/addSource.handler
     events:
       - httpApi: POST /api/learners/{learner}/sources
+      - httpApi:
+          path: /api/me/sources
+          method: POST
+          authorizer:
+            name: account
   removeSource:
     handler: src/handlers/learners/removeSource.handler
     events:
       - httpApi: DELETE /api/learners/{learner}/sources/{source}
+      - httpApi:
+          path: /api/me/sources/{source}
+          method: DELETE
+          authorizer:
+            name: account

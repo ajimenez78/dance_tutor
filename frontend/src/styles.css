@@ -2615,6 +2615,24 @@ input[type="range"] {
   align-items: center;
   gap: 24px;
 }
+.account-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: #fffefa;
+  border: 1px solid #d5deca;
+  border-radius: 5px;
+  padding: 8px 12px;
+  min-height: 36px;
+  color: #294b3d;
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.account-button:hover {
+  border-color: #9fb38f;
+}
 .stage-picker {
   display: grid;
   grid-template-columns: auto 1fr;
@@ -2740,6 +2758,14 @@ input[type="range"] {
     min-height: 32px;
     font-size: 11px;
     max-width: 103px;
+  }
+  .account-button {
+    padding: 6px 8px;
+    min-height: 32px;
+    font-size: 11px;
+  }
+  .header-controls {
+    gap: 12px;
   }
   .app-header {
     height: 53px;

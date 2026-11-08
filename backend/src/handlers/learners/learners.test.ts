@@ -1,5 +1,6 @@
 import type { APIGatewayProxyEventV2 } from "aws-lambda";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import * as accounts from "../../accounts";
 import * as progress from "../../progress";
 import { handler as addSource } from "./addSource";
 import { handler as completions } from "./completions";
@@ -9,6 +10,7 @@ import { handler as stage } from "./stage";
 import { handler as style } from "./style";
 
 vi.mock("../../progress");
+vi.mock("../../accounts");
 
 const learner = "6f1c2b9e-3d4a-4c5b-8e7f-0a1b2c3d4e5f";
 const sourceId = "0b9d8c7e-6f5a-4b3c-9d2e-1f0a9b8c7d6e";
@@ -23,8 +25,15 @@ const source = {
 function request(path: Record<string, string>, body?: unknown) {
   return {
     pathParameters: path,
+    requestContext: {},
     body: body === undefined ? undefined : JSON.stringify(body),
   } as APIGatewayProxyEventV2;
+}
+
+function accountRequest(sub: string) {
+  return {
+    requestContext: { authorizer: { jwt: { claims: { sub } } } },
+  } as unknown as APIGatewayProxyEventV2;
 }
 
 beforeEach(() => vi.resetAllMocks());
@@ -76,7 +85,11 @@ describe("learner handlers", () => {
   it("rejects invalid changes without storing them", async () => {
     const results = [
       await style(request({ learner }, { style: "tango" })),
-      await style({ pathParameters: { learner }, body: "{" } as never),
+      await style({
+        pathParameters: { learner },
+        requestContext: {},
+        body: "{",
+      } as never),
       await stage(request({ learner, style: "salsa" }, { stage: "expert" })),
       await completions(
         request({ learner }, { lessonId: "unknown", day: "2026-11-07" }),
@@ -101,5 +114,28 @@ describe("learner handlers", () => {
       progress.removeSource,
     ])
       expect(write).not.toHaveBeenCalled();
+  });
+
+  it("uses the account's learner on account routes", async () => {
+    vi.mocked(accounts.accountLearner).mockResolvedValue(learner);
+    const result = await getProgress(accountRequest("user-1"));
+    expect(result.statusCode).toBe(200);
+    expect(accounts.accountLearner).toHaveBeenCalledWith("user-1");
+    expect(progress.getProgress).toHaveBeenCalledWith(learner);
+  });
+
+  it("refuses an account without a linked learner", async () => {
+    vi.mocked(accounts.accountLearner).mockResolvedValue(null);
+    const result = await getProgress(accountRequest("user-1"));
+    expect(result.statusCode).toBe(404);
+    expect(progress.getProgress).not.toHaveBeenCalled();
+  });
+
+  it("refuses guest access to a learner linked to an account", async () => {
+    vi.mocked(accounts.isLinked).mockResolvedValue(true);
+    const result = await style(request({ learner }, { style: "salsa" }));
+    expect(result.statusCode).toBe(403);
+    expect(accounts.isLinked).toHaveBeenCalledWith(learner);
+    expect(progress.setStyle).not.toHaveBeenCalled();
   });
 });

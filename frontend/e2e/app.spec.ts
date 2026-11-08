@@ -353,6 +353,8 @@ test("onboarding and navigation support keyboard operation", async ({
     page.getByRole("button", { name: "Start with Salsa" }),
   ).toBeVisible();
   await page.keyboard.press("Tab");
+  await expect(page.getByRole("button", { name: "Sign in" })).toBeFocused();
+  await page.keyboard.press("Tab");
   await expect(page.getByRole("combobox", { name: "Language" })).toBeFocused();
   await page.keyboard.press("Tab");
   await expect(

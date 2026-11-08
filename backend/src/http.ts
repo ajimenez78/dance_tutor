@@ -32,11 +32,6 @@ export const isUuid = (value: unknown): value is string =>
   typeof value === "string" &&
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
 
-export function parseLearner(event: APIGatewayProxyEventV2): string | null {
-  const learner = event.pathParameters?.learner;
-  return isUuid(learner) ? learner : null;
-}
-
 export function parseBody(event: APIGatewayProxyEventV2): Record<string, unknown> {
   try {
     return JSON.parse(event.body ?? "{}") ?? {};

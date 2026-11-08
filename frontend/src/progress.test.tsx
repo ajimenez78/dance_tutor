@@ -2,6 +2,7 @@ import { act, renderHook, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { dateKey, emptyProgress } from "./model";
 import { LEARNER_KEY, useProgress } from "./progress";
+import type { Account } from "./progress";
 
 const source = {
   id: "0b9d8c7e-6f5a-4b3c-9d2e-1f0a9b8c7d6e",
@@ -30,8 +31,8 @@ function calls(fetch: ReturnType<typeof mockApi>) {
   ]);
 }
 
-async function render() {
-  const view = renderHook(() => useProgress());
+async function render(account: Account | null = null) {
+  const view = renderHook(() => useProgress(account));
   await waitFor(() => expect(view.result.current.progress).not.toBeNull());
   return view;
 }
@@ -105,5 +106,27 @@ describe("learner progress", () => {
     expect(result.current.remembered).toBe(false);
     expect(result.current.progress).toEqual(emptyProgress);
     vi.restoreAllMocks();
+  });
+
+  it("links the guest on sign-in and then starts a new guest", async () => {
+    const fetch = mockApi();
+    await render();
+    const guest = localStorage.getItem(LEARNER_KEY);
+    const { result } = await render({ sub: "user-1", token: "token-1" });
+    act(() => result.current.selectStyle("bachata"));
+    await waitFor(() => expect(fetch).toHaveBeenCalledTimes(4));
+    expect(fetch.mock.calls.slice(1).map(([path, init]) => [
+      init?.method,
+      path,
+      new Headers(init?.headers).get("authorization"),
+    ])).toEqual([
+      ["POST", "/api/me/link", "Bearer token-1"],
+      ["GET", "/api/me/progress", "Bearer token-1"],
+      ["PUT", "/api/me/style", "Bearer token-1"],
+    ]);
+    expect(JSON.parse(String(fetch.mock.calls[1][1]?.body))).toEqual({
+      learnerId: guest,
+    });
+    expect(localStorage.getItem(LEARNER_KEY)).not.toBe(guest);
   });
 });
