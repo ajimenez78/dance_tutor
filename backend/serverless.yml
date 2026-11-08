@@ -5,7 +5,7 @@ provider:
   name: aws
   runtime: nodejs24.x
   architecture: arm64
-  region: ${opt:region, 'eu-west-1'}
+  region: ${opt:region, 'eu-south-2'}
   memorySize: 256
   timeout: 10
   environment:

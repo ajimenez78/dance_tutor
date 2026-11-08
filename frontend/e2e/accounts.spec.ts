@@ -11,7 +11,7 @@ let userPool = "";
 
 function cognito(...args: string[]) {
   execFileSync("aws", ["cognito-idp", ...args, "--user-pool-id", userPool], {
-    env: { ...process.env, AWS_REGION: "eu-west-1" },
+    env: { ...process.env, AWS_REGION: "eu-south-2" },
   });
 }
 

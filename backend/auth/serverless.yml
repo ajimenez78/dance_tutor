@@ -3,7 +3,7 @@ service: dance-tutor-auth
 
 provider:
   name: aws
-  region: ${opt:region, 'eu-west-1'}
+  region: ${opt:region, 'eu-south-2'}
 
 custom:
   appUrls:
