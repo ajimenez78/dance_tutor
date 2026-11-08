@@ -49,6 +49,7 @@
 - The frontend applies progress changes at once and sends saves one at a time, in order (`frontend/src/progress.ts`). In Playwright, use `reloadWhenSaved` from `e2e/fixtures.ts` instead of `page.reload()`.
 - Restart long-running dev servers after config changes; check `/api` responses through port 5173 return JSON, not `index.html`.
 - The GitHub repo belongs to `ajimenez78`; for `gh` actions use `GH_TOKEN=$(gh auth token --user ajimenez78) gh ...`.
+- Update CLAUDE.md for each implemented feature to keep the project context up to date.
 
 ## Strategy
 
