@@ -45,9 +45,23 @@ resources:
         AttributeMapping:
           email: email
           email_verified: email_verified
+    Facebook:
+      Type: AWS::Cognito::UserPoolIdentityProvider
+      Properties:
+        UserPoolId: !Ref UserPool
+        ProviderName: Facebook
+        ProviderType: Facebook
+        ProviderDetails:
+          client_id: "1808115900427571"
+          client_secret: "{{resolve:secretsmanager:dance-tutor/facebook}}"
+          authorize_scopes: public_profile,email
+        AttributeMapping:
+          email: email
     AppClient:
       Type: AWS::Cognito::UserPoolClient
-      DependsOn: Google
+      DependsOn:
+        - Google
+        - Facebook
       Properties:
         UserPoolId: !Ref UserPool
         ClientName: web
@@ -61,6 +75,7 @@ resources:
         SupportedIdentityProviders:
           - COGNITO
           - Google
+          - Facebook
         CallbackURLs: ${self:custom.urls}
         LogoutURLs: ${self:custom.urls}
         ExplicitAuthFlows:
