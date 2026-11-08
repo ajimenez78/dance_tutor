@@ -3,7 +3,7 @@ service: dance-tutor-auth
 
 provider:
   name: aws
-  region: ${opt:region, 'eu-west-1'}
+  region: ${opt:region, 'eu-south-2'}
 
 custom:
   appUrls:
@@ -32,8 +32,22 @@ resources:
           RecoveryMechanisms:
             - Name: verified_email
               Priority: 1
+    Google:
+      Type: AWS::Cognito::UserPoolIdentityProvider
+      Properties:
+        UserPoolId: !Ref UserPool
+        ProviderName: Google
+        ProviderType: Google
+        ProviderDetails:
+          client_id: 670552039273-lufkseejueidv7kp56dn5ac3h3va4mj5.apps.googleusercontent.com
+          client_secret: "{{resolve:secretsmanager:dance-tutor/google}}"
+          authorize_scopes: openid email profile
+        AttributeMapping:
+          email: email
+          email_verified: email_verified
     AppClient:
       Type: AWS::Cognito::UserPoolClient
+      DependsOn: Google
       Properties:
         UserPoolId: !Ref UserPool
         ClientName: web
@@ -46,6 +60,7 @@ resources:
           - email
         SupportedIdentityProviders:
           - COGNITO
+          - Google
         CallbackURLs: ${self:custom.urls}
         LogoutURLs: ${self:custom.urls}
         ExplicitAuthFlows:
