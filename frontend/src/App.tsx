@@ -1382,7 +1382,16 @@ function DanceTutor({ account }: { account: Account | null }) {
 // guest progress first.
 function SignedInTutor() {
   const auth = useAuth();
-  if (auth.isLoading) return <ContentStatus />;
+  // A session stored past its access token's expiry is not renewed on load:
+  // renew it with the refresh token, or continue as a guest.
+  const expired = auth.user?.expired;
+  useEffect(() => {
+    if (expired)
+      auth.signinSilent().then((user) => {
+        if (!user) auth.removeUser();
+      });
+  }, [expired]);
+  if (auth.isLoading || expired) return <ContentStatus />;
   const account = auth.user
     ? { sub: auth.user.profile.sub, token: auth.user.access_token }
     : null;

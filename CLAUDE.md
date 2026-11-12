@@ -43,6 +43,7 @@
 - Deploy order per stage: `npm run db:deploy`, `db:migrate` and `auth:deploy` before the API, since the API resolves the cluster endpoint and ARN from the `dance-tutor-data-<stage>` stack and the user pool from `dance-tutor-auth-<stage>`.
 - Identity provider secrets live in Secrets Manager (`dance-tutor/google`, `dance-tutor/facebook`) in eu-south-2, the stacks' region: CloudFormation resolves `{{resolve:secretsmanager:...}}` only in the stack's own region. Never put secrets in SSM parameters or `${ssm:...}`, which would copy them into the template.
 - Facebook is deployed to dev only: the Meta app is in development mode (only its admins and testers can sign in). Deploy prod auth once the app is live.
+- react-oidc-context keeps an expired stored session in `auth.user` and does not renew it on load; `SignedInTutor` renews it with the refresh token or falls back to guest.
 - `serverless offline` enforces the JWT authorizer only with `ignoreJWTSignature: true` and a named authorizer (`authorizer: { name: account }`); it checks issuer, audience and expiry but not the signature.
 - Keep `pg` under `build.esbuild.external` in `backend/serverless.yml`: it is CommonJS and fails inside the ESM bundle ("Dynamic require of events").
 - Playwright account tests create a Cognito test user with the AWS CLI: run them with `AWS_PROFILE` set.
